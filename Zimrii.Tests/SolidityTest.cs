@@ -20,6 +20,8 @@ namespace Zimrii.Tests
         [Fact]
         public async Task MusicCopyrightTest()
         {
+            await Setup();
+
             var contractAddress = _receipts["MusicCopyright"].ContractAddress;
             var contract = _web3.Eth.GetContract(_abi["MusicCopyright"], contractAddress);
 
@@ -54,12 +56,15 @@ namespace Zimrii.Tests
                 await _web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));
             unlockResult.Should().BeTrue();
 
-            var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress, new HexBigInteger(900000),
-                new HexBigInteger(120), "musicId", "copyrightId");
-            transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
-                new HexBigInteger(900000), new HexBigInteger(120), @"http:\\myservice\");
+            var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress, 
+                new HexBigInteger(2000000), new HexBigInteger(120), "musicId", "copyrightId");
 
-            var receipt = await MineAndGetReceiptAsync(_web3, transactionHash);
+            var receipt1 = await MineAndGetReceiptAsync(_web3, transactionHash);
+
+            transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
+                new HexBigInteger(2000000), new HexBigInteger(120), @"http:\\myservice\");
+
+            var receipt2 = await MineAndGetReceiptAsync(_web3, transactionHash);
 
             var debuginfo = await _web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
                 new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });

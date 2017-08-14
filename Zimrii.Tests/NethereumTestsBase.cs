@@ -13,7 +13,7 @@ namespace Zimrii.Tests
 {
     public class NethereumTestsBase
     {
-        private const string RootPath = @"..\..\..\..\Zimrii\contracts\bin";
+        private const string RootPath = @"..\..\..\..\..\Zimrii\contracts\bin";
         private readonly IEnumerable<string> _contracts;
 
         protected const string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
@@ -25,7 +25,7 @@ namespace Zimrii.Tests
 
         public NethereumTestsBase(IEnumerable<string> contracts)
         {
-            _contracts = contracts;
+            _contracts = contracts;            
         }
 
         protected async Task Setup()
@@ -38,7 +38,7 @@ namespace Zimrii.Tests
 
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
         {
-            var miningResult = await web3.Miner.Start.SendRequestAsync(20);
+            var miningResult = await web3.Miner.Start.SendRequestAsync(200);
             miningResult.Should().BeTrue();
 
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
@@ -112,7 +112,7 @@ namespace Zimrii.Tests
                 switch (contract)
                 {
                     default:
-                        deploy = await web3.Eth.DeployContract.SendRequestAsync(_abi[contract], _code[contract], AccountAddress, new HexBigInteger(900000));
+                        deploy = await web3.Eth.DeployContract.SendRequestAsync(_abi[contract], _code[contract], AccountAddress, new HexBigInteger(2000000));
                         break;
                 }
 

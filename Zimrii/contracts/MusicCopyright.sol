@@ -71,7 +71,7 @@ contract MusicCopyright is AccessRestriction {
         
         if (copyrights[musicId].exists) {
             if (copyrights[musicId].active) {
-                Copyright copyright = copyrights[musicId];            
+                Copyright memory copyright = copyrights[musicId];            
                 res = copyright.copyrightId;
             }
         }
@@ -101,7 +101,7 @@ contract MusicCopyright is AccessRestriction {
         
         if (copyrights[musicId].exists) {
             if (copyrights[musicId].active) {
-                Copyright copyright = copyrights[musicId];            
+                Copyright memory copyright = copyrights[musicId];            
                 res = strConcat(copyrightEndpointResourceRoot, copyright.copyrightId);
             }
         }
