@@ -20,8 +20,8 @@ contract MusicCopyright is AccessRestriction {
     // musicId: The music guid. It's an indexed patameter.
     // copyrightId: The copyright guid.
     event SetCopyright(
-        string indexed musicId, 
-        string copyrightId
+        bytes32 indexed musicId, 
+        bytes32 copyrightId
     );
 
     // Copyright structure.
@@ -29,7 +29,7 @@ contract MusicCopyright is AccessRestriction {
         // Used to check if the record exists
         bool exists;
         // Represents the guid of the copyright
-        string copyrightId;
+        bytes32 copyrightId;
         // Is the record active? 
         bool active;
     }
@@ -40,7 +40,7 @@ contract MusicCopyright is AccessRestriction {
     string copyrightEndpointResourceRoot = "";
 
     // Holds all the mappings music -> copyrights
-    mapping(string => Copyright) copyrights;
+    mapping(bytes32 => Copyright) copyrights;
     
     // Sets a copyright into the mapping
     // Params:
@@ -49,8 +49,8 @@ contract MusicCopyright is AccessRestriction {
     // Remarks:
     // Can only be executed by Zimrii
     function setCopyright(
-        string musicId,
-        string copyrightId
+        bytes32 musicId,
+        bytes32 copyrightId
     ) onlyOwner payable {
         
         copyrights[musicId] = Copyright(true, copyrightId, true);   
@@ -65,8 +65,8 @@ contract MusicCopyright is AccessRestriction {
     // Returns:
     // The guid of the copyright
     function getCopyrightId(
-        string musicId
-    ) constant returns (string res) {
+        bytes32 musicId
+    ) constant returns (bytes32 res) {
          res = "";
         
         if (copyrights[musicId].exists) {
@@ -95,7 +95,7 @@ contract MusicCopyright is AccessRestriction {
     // Returns:
     // the endpoint for example https://zimrii.api.com/copyrights/<copyright guid>
     function getCopyrightResourceEndpoint(
-        string musicId
+        bytes32 musicId
     ) constant returns (string res) {
          res = "";
         
@@ -109,23 +109,37 @@ contract MusicCopyright is AccessRestriction {
         return res;
     }
 
-    // Concatenats 2 strings
+    // Concatenates a string to a bytes32
     // Params:
     // a: The frist string to concatenate
-    // b: The second string to concatenate
+    // b: The second bytes32 to concatenate
     // Returns:
     // a string which is a + b 
     function strConcat(
         string a, 
-        string b
+        bytes32 b
     ) internal returns (string) {
         bytes memory ba = bytes(a);
-        bytes memory bb = bytes(b);
-        string memory ab = new string(ba.length + bb.length);
+
+        // get length of bytes32
+        uint len = 0;
+        for (uint j = 0; j < 32; j++) {
+            byte c = byte(bytes32(uint(b) * 2 ** (8 * j)));
+            if (c != 0) {
+                len += 1;
+            }            
+        }
+
+        string memory ab = new string(ba.length + len);
         bytes memory bab = bytes(ab);
         uint k = 0;
         for (uint i = 0; i < ba.length; i++) bab[k++] = ba[i];
-        for (i = 0; i < bb.length; i++) bab[k++] = bb[i];
+        for (i = 0; i < b.length; i++) {
+            byte char = byte(bytes32(uint(b) * 2 ** (8 * i)));
+            if (char != 0) {
+                bab[k++] = char;
+            }            
+        }
 
         return string(bab);
     }

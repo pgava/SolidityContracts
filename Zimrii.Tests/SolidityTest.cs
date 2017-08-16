@@ -27,8 +27,10 @@ namespace Zimrii.Tests
 
             var addCopyrightEvent = contract.GetEvent("SetCopyright");
             var filterAll = await addCopyrightEvent.CreateFilterAsync();
+            var filterMusicId = await addCopyrightEvent.CreateFilterAsync("musicId");
 
             #region Filter Error
+            // error when filter strings
             /*
                Nethereum.JsonRpc.Client.RpcResponseException : invalid topic(s)
                at Nethereum.JsonRpc.Client.RpcRequestResponseHandler`1.<SendRequestAsync>d__7.MoveNext()
@@ -43,8 +45,6 @@ namespace Zimrii.Tests
                at NUnit.Framework.Internal.Commands.TestMethodCommand.RunAsyncTestMethod(TestExecutionContext context)
             */
 
-            //var filterMusicId = await addCopyrightEvent.CreateFilterAsync("0x18dd76fdfa26e46f27e10cc791e46a829f353b2e0b38875bf1b4f5afbec0948a");
-            //var logMusicId = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterMusicId);
             #endregion
 
             var setCopyright = contract.GetFunction("setCopyright");
@@ -72,6 +72,9 @@ namespace Zimrii.Tests
             var log = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterAll);
             log.Count.Should().Be(1);
 
+            var logMusicId = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterMusicId);
+            logMusicId.Count.Should().Be(1);
+
             var res3 = await getCopyrightId.CallAsync<string>("musicId");
             res3.Should().Be("copyrightId");
 
@@ -82,10 +85,10 @@ namespace Zimrii.Tests
 
     public class AddCopyrightEvent
     {
-        [Parameter("string", "musicId", 1, true)]
+        [Parameter("bytes32", "musicId", 1, true)]
         public string MusicId { get; set; }
 
-        [Parameter("string", "copyrightId", 2, false)]
+        [Parameter("bytes32", "copyrightId", 2, false)]
         public string CopyrightId { get; set; }
     }
 }
