@@ -1,7 +1,7 @@
 pragma solidity ^0.4.10;
 import "./AccessRestriction.sol";
 
-// Implements the storing of the music copyrights.
+// Implements the storage of the music copyrights.
 // The underline structure maps a music guid to a copyright guid.
 // The guids are a reference to the Zimrii database.
 // From a music guid is possible to get the copyright guid and
@@ -29,9 +29,9 @@ contract MusicCopyright is AccessRestriction {
         // Used to check if the record exists
         bool exists;
         // Represents the guid of the copyright
-        bytes32 copyrightId;
-        // Is the record active? 
-        bool active;
+        bytes32 copyrightId;  
+         // Represents the hash of the copyright
+        bytes32 copyrightHash;     
     }
     
     // Holds the root endpoint url.
@@ -46,45 +46,67 @@ contract MusicCopyright is AccessRestriction {
     // Params:
     // musicId: the guid of the music
     // copyrightId: the guid of the copyright
+    // copyrightHash: the hash of the copyright
     // Remarks:
     // Can only be executed by Zimrii
     function setCopyright(
         bytes32 musicId,
-        bytes32 copyrightId
-    ) onlyOwner payable {
+        bytes32 copyrightId,
+        bytes32 copyrightHash
+    ) onlyOwner payable 
+    {
         
-        copyrights[musicId] = Copyright(true, copyrightId, true);   
+        copyrights[musicId] = Copyright(true, copyrightId, copyrightHash);   
 
         // todo: do I need to return also  data: {'endpoint': 'xxxx'}
         SetCopyright(musicId, copyrightId);
     }
 
-    // Gets the copyright for a particular piece of music
+    // Gets the copyright guid for a particular piece of music
     // Params:
     // musicId: The guid of the music
     // Returns:
     // The guid of the copyright
     function getCopyrightId(
         bytes32 musicId
-    ) constant returns (bytes32 res) {
+    ) constant returns (bytes32 res) 
+    {
          res = "";
         
         if (copyrights[musicId].exists) {
-            if (copyrights[musicId].active) {
-                Copyright memory copyright = copyrights[musicId];            
-                res = copyright.copyrightId;
-            }
+            Copyright memory copyright = copyrights[musicId];            
+            res = copyright.copyrightId;
         }
 
         return res;
     }
 
-    // Sets the roor endpoint for copyright references
+    // Gets the copyright hash for a particular piece of music
+    // Params:
+    // musicId: The guid of the music
+    // Returns:
+    // The guid of the copyright
+    function getCopyrightHash(
+        bytes32 musicId
+    ) constant returns (bytes32 res) 
+    {
+         res = "";
+        
+        if (copyrights[musicId].exists) {
+            Copyright memory copyright = copyrights[musicId];            
+            res = copyright.copyrightHash;
+        }
+
+        return res;
+    }
+
+    // Sets the root endpoint for copyright references
     // Params:
     // endpoint: the root endpoint    
     function setCopyrightEndpointResourceRoot(
         string endpoint
-    ) onlyOwner payable {
+    ) onlyOwner payable 
+    {
         
         copyrightEndpointResourceRoot = endpoint;
     }
@@ -96,14 +118,13 @@ contract MusicCopyright is AccessRestriction {
     // the endpoint for example https://zimrii.api.com/copyrights/<copyright guid>
     function getCopyrightResourceEndpoint(
         bytes32 musicId
-    ) constant returns (string res) {
+    ) constant returns (string res) 
+    {
          res = "";
         
         if (copyrights[musicId].exists) {
-            if (copyrights[musicId].active) {
-                Copyright memory copyright = copyrights[musicId];            
-                res = strConcat(copyrightEndpointResourceRoot, copyright.copyrightId);
-            }
+            Copyright memory copyright = copyrights[musicId];            
+            res = strConcat(copyrightEndpointResourceRoot, copyright.copyrightId);
         }
 
         return res;
@@ -118,7 +139,8 @@ contract MusicCopyright is AccessRestriction {
     function strConcat(
         string a, 
         bytes32 b
-    ) internal returns (string) {
+    ) internal returns (string) 
+    {
         bytes memory ba = bytes(a);
 
         // get length of bytes32
@@ -133,7 +155,9 @@ contract MusicCopyright is AccessRestriction {
         string memory ab = new string(ba.length + len);
         bytes memory bab = bytes(ab);
         uint k = 0;
-        for (uint i = 0; i < ba.length; i++) bab[k++] = ba[i];
+        for (uint i = 0; i < ba.length; i++) {
+            bab[k++] = ba[i];
+        }
         for (i = 0; i < b.length; i++) {
             byte char = byte(bytes32(uint(b) * 2 ** (8 * i)));
             if (char != 0) {
