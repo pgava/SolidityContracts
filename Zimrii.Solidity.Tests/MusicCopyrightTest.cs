@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xunit;
-using Nethereum.RPC.Eth.DTOs;
-using Nethereum.Web3;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.DebugGeth.DTOs;
 using FluentAssertions;
@@ -10,20 +7,20 @@ using Nethereum.ABI.FunctionEncoding.Attributes;
 
 namespace Zimrii.Tests
 {
-    public class SolidityTest : NethereumTestsBase
+    public class MusicCopyrightTest : NethereumTestsBase
     {
 
-        public SolidityTest() : base(new[] { "AccessRestriction", "MusicCopyright" })
+        public MusicCopyrightTest() : base(new[] { "AccessRestriction", "MusicCopyright" })
         {
         }
 
         [Fact]
-        public async Task MusicCopyrightTest()
+        public async Task MusicCopyrightSolTest()
         {
             await Setup();
 
-            var contractAddress = _receipts["MusicCopyright"].ContractAddress;
-            var contract = _web3.Eth.GetContract(_abi["MusicCopyright"], contractAddress);
+            var contractAddress = Receipts["MusicCopyright"].ContractAddress;
+            var contract = Web3.Eth.GetContract(Abi["MusicCopyright"], contractAddress);
 
             var addCopyrightEvent = contract.GetEvent("SetCopyright");
             var filterAll = await addCopyrightEvent.CreateFilterAsync();
@@ -49,24 +46,25 @@ namespace Zimrii.Tests
 
             var setCopyright = contract.GetFunction("setCopyright");
             var getCopyrightId = contract.GetFunction("getCopyrightId");
+            var getCopyrightHash = contract.GetFunction("getCopyrightHash");
             var setCopyrightEndpointResourceRoot = contract.GetFunction("setCopyrightEndpointResourceRoot");
             var getCopyrightResourceEndpoint = contract.GetFunction("getCopyrightResourceEndpoint");
 
             var unlockResult =
-                await _web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));
             unlockResult.Should().BeTrue();
 
             var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress, 
-                new HexBigInteger(2000000), new HexBigInteger(120), "musicId", "copyrightId");
+                new HexBigInteger(2000000), new HexBigInteger(120), "musicId", "copyrightId", "copyrightHash");
 
-            var receipt1 = await MineAndGetReceiptAsync(_web3, transactionHash);
+            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash);
 
             transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
                 new HexBigInteger(2000000), new HexBigInteger(120), @"http:\\myservice\");
 
-            var receipt2 = await MineAndGetReceiptAsync(_web3, transactionHash);
+            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash);
 
-            var debuginfo = await _web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
+            var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
                 new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
 
             var log = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterAll);
@@ -80,6 +78,10 @@ namespace Zimrii.Tests
 
             var res4 = await getCopyrightResourceEndpoint.CallAsync<string>("musicId");
             res4.Should().Be(@"http:\\myservice\copyrightId");
+
+            var res5 = await getCopyrightHash.CallAsync<string>("musicId");
+            res5.Should().Be("copyrightHash");
+
         }
     }
 

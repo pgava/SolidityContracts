@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii", "Zimrii\Zimrii.csproj", "{050A3C9E-92BA-4AD0-BD63-8684E27E61B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.Solidity", "Zimrii.Solidity\Zimrii.Solidity.csproj", "{050A3C9E-92BA-4AD0-BD63-8684E27E61B8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.Tests", "Zimrii.Tests\Zimrii.Tests.csproj", "{E89344A5-16CB-4C0D-8652-A6661BA6063E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.Solidity.Tests", "Zimrii.Solidity.Tests\Zimrii.Solidity.Tests.csproj", "{E89344A5-16CB-4C0D-8652-A6661BA6063E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

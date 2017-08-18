@@ -18,10 +18,10 @@ namespace Zimrii.Tests
 
         protected const string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
         protected const string PassPhrase = "password";
-        protected Dictionary<string, TransactionReceipt> _receipts;
-        protected Dictionary<string, string> _abi;
-        protected Dictionary<string, string> _code;
-        protected Web3 _web3;
+        protected Dictionary<string, TransactionReceipt> Receipts;
+        protected Dictionary<string, string> Abi;
+        protected Dictionary<string, string> Code;
+        protected Web3 Web3;
 
         public NethereumTestsBase(IEnumerable<string> contracts)
         {
@@ -30,10 +30,10 @@ namespace Zimrii.Tests
 
         protected async Task Setup()
         {        
-            _web3 = new Web3();
-            _abi = ReadAbi(_contracts);
-            _code = ReadCode(_contracts);
-            _receipts = await DeployContract(_web3, _contracts);
+            Web3 = new Web3();
+            Abi = ReadAbi(_contracts);
+            Code = ReadCode(_contracts);
+            Receipts = await DeployContract(Web3, _contracts);
         }
 
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
@@ -67,7 +67,7 @@ namespace Zimrii.Tests
 
         private string ReadContent(string path)
         {
-            return System.IO.File.ReadAllText(path);
+            return File.ReadAllText(path);
         }
 
         private Dictionary<string, string> ReadAbi(IEnumerable<string> contracts)
@@ -108,11 +108,11 @@ namespace Zimrii.Tests
 
             foreach (var contract in contracts)
             {
-                var deploy = "";
+                string deploy;
                 switch (contract)
                 {
                     default:
-                        deploy = await web3.Eth.DeployContract.SendRequestAsync(_abi[contract], _code[contract], AccountAddress, new HexBigInteger(2000000));
+                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, new HexBigInteger(2000000));
                         break;
                 }
 
