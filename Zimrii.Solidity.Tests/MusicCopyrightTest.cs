@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Xunit;
-using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.DebugGeth.DTOs;
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
+using Nethereum.Hex.HexTypes;
+using Nethereum.RPC.DebugGeth.DTOs;
+using Xunit;
 
-namespace Zimrii.Tests
+namespace Zimrii.Solidity.Tests
 {
     public class MusicCopyrightTest : NethereumTestsBase
     {
