@@ -13,8 +13,8 @@ namespace Zimrii.Solidity.Tests
 {
     public class NethereumTestsBase
     {
-        private const string RootPath = @"..\..\..\..\..\Zimrii\contracts\bin";
-        private readonly IEnumerable<string> _contracts;
+        protected const string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\bin";
+        protected readonly IEnumerable<string> Contracts;
 
         protected const string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
         protected const string PassPhrase = "password";
@@ -25,16 +25,22 @@ namespace Zimrii.Solidity.Tests
 
         public NethereumTestsBase(IEnumerable<string> contracts)
         {
-            _contracts = contracts;            
+            Contracts = contracts;
+            Web3 = new Web3();
         }
 
         protected async Task Setup()
-        {        
-            Web3 = new Web3();
-            Abi = ReadAbi(_contracts);
-            Code = ReadCode(_contracts);
-            Receipts = await DeployContract(Web3, _contracts);
+        {
+            ReadContractsDetails();
+            Receipts = await DeployContract(Web3, Contracts);
         }
+
+        protected void ReadContractsDetails()
+        {
+            Abi = ReadAbi(Contracts);
+            Code = ReadCode(Contracts);
+        }
+
 
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
         {
@@ -54,7 +60,7 @@ namespace Zimrii.Solidity.Tests
             return receipt;
         }
 
-        private static string AssemblyDirectory
+        protected static string AssemblyDirectory
         {
             get
             {

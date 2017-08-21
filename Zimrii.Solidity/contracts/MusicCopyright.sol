@@ -130,6 +130,13 @@ contract MusicCopyright is AccessRestriction {
         return res;
     }
 
+    /**
+     * Kill function to end the contract (useful for hard forks).
+     */
+    function kill() onlyOwner returns(uint) {
+        selfdestruct(msg.sender);
+    }
+
     // Concatenates a string to a bytes32
     // Params:
     // a: The frist string to concatenate
