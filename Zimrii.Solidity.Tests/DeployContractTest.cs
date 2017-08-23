@@ -1,7 +1,10 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nethereum.Hex.HexTypes;
+using Nethereum.RPC.Eth.DTOs;
+using Nethereum.Web3;
 using Xunit;
 
 namespace Zimrii.Solidity.Tests
@@ -24,7 +27,7 @@ namespace Zimrii.Solidity.Tests
              * PassPhrase = "";
              */
 
-            var unlockResult = await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));
+            var unlockResult = await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
             foreach (var contract in Contracts)
@@ -53,19 +56,19 @@ namespace Zimrii.Solidity.Tests
             }
         }
 
-        //protected override async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
-        //{
-        //    var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+        protected override async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
+        {
+            var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
 
-        //    while (receipt == null)
-        //    {
-        //        Thread.Sleep(1000);
-        //        receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-        //    }
+            while (receipt == null)
+            {
+                Thread.Sleep(1000);
+                receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+            }
 
 
-        //    return receipt;
-        //}
+            return receipt;
+        }
     }
 
 }

@@ -16,8 +16,8 @@ namespace Zimrii.Solidity.Tests
         protected const string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\bin";
         protected readonly IEnumerable<string> Contracts;
 
-        protected const string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
-        protected const string PassPhrase = "password";
+        protected string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
+        protected string PassPhrase = "password";
         protected Dictionary<string, TransactionReceipt> Receipts;
         protected Dictionary<string, string> Abi;
         protected Dictionary<string, string> Code;
