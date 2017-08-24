@@ -40,7 +40,7 @@ namespace Zimrii.Solidity.Tests
                         break;
                 }
 
-                var receipt = await MineAndGetReceiptAsync(Web3, deploy);
+                var receipt = await MineAndGetReceiptAsync(Web3, deploy, false);
 
                 string curDir = AssemblyDirectory;
                 var contractFile = Path.Combine(curDir + RootPath, @"..\" + contract + "-eth.txt");
@@ -54,21 +54,7 @@ namespace Zimrii.Solidity.Tests
                 };
                 File.WriteAllLines(contractFile, lines);
             }
-        }
-
-        protected override async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
-        {
-            var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-
-            while (receipt == null)
-            {
-                Thread.Sleep(1000);
-                receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-            }
-
-
-            return receipt;
-        }
+        }        
     }
 
 }

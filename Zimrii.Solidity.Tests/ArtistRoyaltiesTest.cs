@@ -17,7 +17,7 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task ArtistRoyaltiesSolTest()
         {
-            await Setup();
+            await Setup(true);
 
             var contractAddress = Receipts["ArtistRoyalties"].ContractAddress;
             var contract = Web3.Eth.GetContract(Abi["ArtistRoyalties"], contractAddress);
@@ -56,12 +56,12 @@ namespace Zimrii.Solidity.Tests
             var transactionHash = await setRoyalties.SendTransactionAsync(AccountAddress, 
                 new HexBigInteger(2000000), new HexBigInteger(120), "royaltiesId", "royaltiesIdHash");
 
-            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash);
+            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
             transactionHash = await setRoyaltiesEndpointResourceRoot.SendTransactionAsync(AccountAddress,
                 new HexBigInteger(2000000), new HexBigInteger(120), @"http:\\myservice\");
 
-            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash);
+            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
             var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
                 new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });

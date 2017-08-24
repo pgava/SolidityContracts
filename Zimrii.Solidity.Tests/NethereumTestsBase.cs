@@ -29,10 +29,10 @@ namespace Zimrii.Solidity.Tests
             Web3 = new Web3();
         }
 
-        protected async Task Setup()
+        protected async Task Setup(bool isMining)
         {
             ReadContractsDetails();
-            Receipts = await DeployContract(Web3, Contracts);
+            Receipts = await DeployContract(Web3, Contracts, isMining);
         }
 
         protected void ReadContractsDetails()
@@ -42,10 +42,15 @@ namespace Zimrii.Solidity.Tests
         }
 
 
-        protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash)
+        protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash, bool isMining)
         {
-            var miningResult = await web3.Miner.Start.SendRequestAsync(200);
-            miningResult.Should().BeTrue();
+            bool miningResult = true;
+            if (isMining)
+            {
+                miningResult = await web3.Miner.Start.SendRequestAsync(20);
+                // geth 1.6+ this is not working
+                //miningResult.Should().BeTrue();
+            }
 
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
 
@@ -55,8 +60,12 @@ namespace Zimrii.Solidity.Tests
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
             }
 
-            miningResult = await web3.Miner.Stop.SendRequestAsync();
-            miningResult.Should().BeTrue();
+            if (isMining)
+            {
+                miningResult = await web3.Miner.Stop.SendRequestAsync();
+                miningResult.Should().BeTrue();
+            }
+
             return receipt;
         }
 
@@ -104,12 +113,12 @@ namespace Zimrii.Solidity.Tests
             return codes;
         }
 
-        protected async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts)
+        protected async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining)
         {
             var receipts = new Dictionary<string, TransactionReceipt>();
 
             var unlockResult =
-                await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));            
+                await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);            
             unlockResult.Should().BeTrue();
 
             foreach (var contract in contracts)
@@ -122,7 +131,7 @@ namespace Zimrii.Solidity.Tests
                         break;
                 }
 
-                var receipt = await MineAndGetReceiptAsync(web3, deploy);
+                var receipt = await MineAndGetReceiptAsync(web3, deploy, isMining);
 
                 receipts.Add(contract, receipt);
             }
