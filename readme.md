@@ -2,10 +2,10 @@ BlockChain Ethereum
 ===================
 
 These are some example of smart contracts written for the Ethereum blockchain.
+
 They have been written with Solidity.
 
-
-for testing you can use geth to create a private test blockchain.
+For testing you can use geth to create a private test blockchain.
 
 use this as genesis block:
 ->genesis_dev.json
@@ -28,7 +28,7 @@ use this as genesis block:
 
 
 
-geth 1.5+
+geth <=1.5
 =========
 
 RD /S /Q %~dp0\devChain\geth\chainData
@@ -37,7 +37,7 @@ RD /S /Q %~dp0\devChain\geth\nodes
 del %~dp0\devchain\geth\nodekey
 
 geth.exe  --datadir=devChain init genesis_dev.json
-geth.exe --mine --dev --minerthreads "10" --rpc --maxpeers=0 --datadir=devChain  --rpccorsdomain "*" --rpcapi "eth,web3,personal,net,miner,admin,debug" console 2>>geth.log
+geth.exe --mine --dev --minerthreads "10" --rpc --maxpeers=0 --datadir=devChain  --rpccorsdomain "*" --rpcapi "eth,web3,personal,net,miner,admin,debug" --verbosity 0 console
 
 geth 1.6+
 =========
