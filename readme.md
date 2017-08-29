@@ -1,4 +1,9 @@
-Solidity
+BlockChain Ethereum
+===================
+
+These are some example of smart contracts written for the Ethereum blockchain.
+They have been written with Solidity.
+
 
 for testing you can use geth to create a private test blockchain.
 
