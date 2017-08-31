@@ -90,7 +90,7 @@ namespace Zimrii.Solidity.Tests
         {
             ReadContractsDetails();
 
-            AccountAddress = "";
+            AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
             PassPhrase = "";
 
             var contractAddress = "0x3eda8064f0459a6e8566e261067bc3e61a5ef2be";
@@ -98,7 +98,7 @@ namespace Zimrii.Solidity.Tests
 
             var addCopyrightEvent = contract.GetEvent("SetCopyright");
             var filterAll = await addCopyrightEvent.CreateFilterAsync();
-            var filterMusicId = await addCopyrightEvent.CreateFilterAsync("51BF375C77BC4C089DCAD2AC4935E600");
+            var filterMusicId = await addCopyrightEvent.CreateFilterAsync("BC3FCB8DA4384619AAC2AEE0698D3ECC");
 
             var setCopyright = contract.GetFunction("setCopyright");
             var getCopyrightId = contract.GetFunction("getCopyrightId");
@@ -111,13 +111,16 @@ namespace Zimrii.Solidity.Tests
             unlockResult.Should().BeTrue();
 
             var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress,
-                new HexBigInteger(2000000), new HexBigInteger(120),
-                "51BF375C77BC4C089DCAD2AC4935E600", "3345D89C498A4EB79DB670F46F25EF00", "1B2M2Y8AsgTpgAmY7PhCfg==");
+                "BC3FCB8DA4384619AAC2AEE0698D3ECC", "8037D23F5DE34B2AA0A87887BD0B0E78", "eUFp6J1PDrQwWX/6SSTuCQ==");
 
             var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, false);
 
+            unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
             transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
-                new HexBigInteger(2000000), new HexBigInteger(120), @"http:\\api.zimrii\");
+                @"http:\\api.zimrii\");
 
             var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, false);
 
@@ -130,14 +133,14 @@ namespace Zimrii.Solidity.Tests
             var logMusicId = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterMusicId);
             logMusicId.Count.Should().Be(1);
 
-            var res3 = await getCopyrightId.CallAsync<string>("51BF375C77BC4C089DCAD2AC4935E600");
-            res3.Should().Be("3345D89C498A4EB79DB670F46F25EF00");
+            var res3 = await getCopyrightId.CallAsync<string>("BC3FCB8DA4384619AAC2AEE0698D3ECC");
+            res3.Should().Be("8037D23F5DE34B2AA0A87887BD0B0E78");
 
-            var res4 = await getCopyrightResourceEndpoint.CallAsync<string>("51BF375C77BC4C089DCAD2AC4935E600");
-            res4.Should().Be(@"http:\\api.zimrii\3345D89C498A4EB79DB670F46F25EF00");
+            var res4 = await getCopyrightResourceEndpoint.CallAsync<string>("BC3FCB8DA4384619AAC2AEE0698D3ECC");
+            res4.Should().Be(@"http:\\api.zimrii\8037D23F5DE34B2AA0A87887BD0B0E78");
 
-            var res5 = await getCopyrightHash.CallAsync<string>("51BF375C77BC4C089DCAD2AC4935E600");
-            res5.Should().Be("1B2M2Y8AsgTpgAmY7PhCfg==");
+            var res5 = await getCopyrightHash.CallAsync<string>("BC3FCB8DA4384619AAC2AEE0698D3ECC");
+            res5.Should().Be("eUFp6J1PDrQwWX/6SSTuCQ==");
 
         }
     }
