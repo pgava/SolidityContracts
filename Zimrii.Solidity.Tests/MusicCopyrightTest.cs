@@ -54,14 +54,13 @@ namespace Zimrii.Solidity.Tests
                 await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
-            var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress, 
-                new HexBigInteger(2000000), new HexBigInteger(120), 
+            var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress,                 
                 "51BF375C77BC4C089DCAD2AC4935E600", "3345D89C498A4EB79DB670F46F25EF00", "1B2M2Y8AsgTpgAmY7PhCfg==");
 
             var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
             transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
-                new HexBigInteger(2000000), new HexBigInteger(120), @"http:\\api.zimrii\");
+                @"http:\\api.zimrii\");
 
             var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 

@@ -50,7 +50,7 @@ contract ArtistRoyalties is AccessRestriction {
     function setRoyalties(
         bytes32 royaltiesId,
         bytes32 royaltiesHash
-    ) onlyOwner payable 
+    ) onlyOwner 
     {
         
         royalties[royaltiesId] = RoyaltiesData(true,  royaltiesHash);   
@@ -83,7 +83,7 @@ contract ArtistRoyalties is AccessRestriction {
     // endpoint: the root endpoint    
     function setRoyaltiesEndpointResourceRoot(
         string endpoint
-    ) onlyOwner payable 
+    ) onlyOwner 
     {
         
         royaltiesEndpointResourceRoot = endpoint;

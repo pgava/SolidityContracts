@@ -53,7 +53,7 @@ contract MusicCopyright is AccessRestriction {
         bytes32 musicId,
         bytes32 copyrightId,
         bytes32 copyrightHash
-    ) onlyOwner payable 
+    ) onlyOwner 
     {
         
         copyrights[musicId] = Copyright(true, copyrightId, copyrightHash);   
@@ -105,7 +105,7 @@ contract MusicCopyright is AccessRestriction {
     // endpoint: the root endpoint    
     function setCopyrightEndpointResourceRoot(
         string endpoint
-    ) onlyOwner payable 
+    ) onlyOwner 
     {
         
         copyrightEndpointResourceRoot = endpoint;

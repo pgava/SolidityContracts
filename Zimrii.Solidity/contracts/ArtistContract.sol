@@ -50,7 +50,7 @@ contract ArtistContract is AccessRestriction {
     function setContract(
         bytes32 contractId,
         bytes32 contractHash
-    ) onlyOwner payable 
+    ) onlyOwner 
     {
         
         contracts[contractId] = Contract(true,  contractHash);   
@@ -83,7 +83,7 @@ contract ArtistContract is AccessRestriction {
     // endpoint: the root endpoint    
     function setContractEndpointResourceRoot(
         string endpoint
-    ) onlyOwner payable 
+    ) onlyOwner 
     {
         
         contractEndpointResourceRoot = endpoint;
