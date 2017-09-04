@@ -7,7 +7,6 @@ import "./TokenData.sol";
 contract ZimcoToken is Owned, TokenBase {
     uint256 private sellPrice;
     uint256 private buyPrice;
-    address private _tokenData;
 
   /* This generates a public event on the blockchain that will notify clients */
   event FrozenFunds(address target, bool frozen);
@@ -40,32 +39,32 @@ contract ZimcoToken is Owned, TokenBase {
   }
 
   /// @notice Create `mintedAmount` tokens and send it to `target`
-  /// @param target Address to receive the tokens
-  /// @param mintedAmount the amount of tokens it will receive
-  function mintToken(address target, uint256 mintedAmount) onlyOwner {
+  /// @param _target Address to receive the tokens
+  /// @param _mintedAmount the amount of tokens it will receive
+  function mintToken(address _target, uint256 _mintedAmount) onlyOwner {
       TokenData database = TokenData(_tokenData);
-      uint256 targetValue = database.getBalanceOf(target);
-      database.setBalanceOf(target, targetValue + mintedAmount);
-      totalSupply += mintedAmount;
-      Transfer(0, this, mintedAmount);
-      Transfer(this, target, mintedAmount);
+      uint256 targetValue = database.getBalanceOf(_target);
+      database.setBalanceOf(_target, targetValue + _mintedAmount);
+      totalSupply += _mintedAmount;
+      Transfer(0, this, _mintedAmount);
+      Transfer(this, _target, _mintedAmount);
   }
 
   /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
-  /// @param target Address to be frozen
-  /// @param freeze either to freeze it or not
-  function freezeAccount(address target, bool freeze) onlyOwner {
+  /// @param _target Address to be frozen
+  /// @param _freeze either to freeze it or not
+  function freezeAccount(address _target, bool _freeze) onlyOwner {
       TokenData database = TokenData(_tokenData);
-      database.setFrozenAccount(target, freeze);
-      FrozenFunds(target, freeze);
+      database.setFrozenAccount(_target, _freeze);
+      FrozenFunds(_target, _freeze);
   }
 
   /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth
-  /// @param newSellPrice Price the users can sell to the contract
-  /// @param newBuyPrice Price users can buy from the contract
-  function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner {
-      sellPrice = newSellPrice;
-      buyPrice = newBuyPrice;
+  /// @param _newSellPrice Price the users can sell to the contract
+  /// @param _newBuyPrice Price users can buy from the contract
+  function setPrices(uint256 _newSellPrice, uint256 _newBuyPrice) onlyOwner {
+      sellPrice = _newSellPrice;
+      buyPrice = _newBuyPrice;
   }
 
   /// @notice Buy tokens from contract by sending ether
@@ -75,10 +74,10 @@ contract ZimcoToken is Owned, TokenBase {
   }
 
   /// @notice Sell `amount` tokens to contract
-  /// @param amount amount of tokens to be sold
-  function sell(uint256 amount) {
-      require(this.balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
-      _transfer(msg.sender, this, amount);              // makes the transfers
-      msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
+  /// @param _amount amount of tokens to be sold
+  function sell(uint256 _amount) {
+      require(this.balance >= _amount * sellPrice);      // checks if the contract has enough ether to buy
+      _transfer(msg.sender, this, _amount);              // makes the transfers
+      msg.sender.transfer(_amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
   }
 }
