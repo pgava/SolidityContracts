@@ -1,9 +1,9 @@
 pragma solidity ^0.4.13;
 
-import "./token.sol";
-import "./owned.sol";
+import "./TokenBase.sol";
+import "./Owned.sol";
 
-contract MyAdvancedToken is owned, token {
+contract MyAdvancedToken is Owned, TokenBase {
       uint256 public sellPrice;
   uint256 public buyPrice;
 
@@ -18,7 +18,7 @@ contract MyAdvancedToken is owned, token {
       string tokenName,
       uint8 decimalUnits,
       string tokenSymbol
-  ) token (initialSupply, tokenName, decimalUnits, tokenSymbol) {}
+  ) TokenBase (0x0, initialSupply, tokenName, decimalUnits, tokenSymbol) {}
 
   /* Internal transfer, only can be called by this contract */
   function _transfer(address _from, address _to, uint _value) internal {

@@ -13,7 +13,7 @@ namespace Zimrii.Solidity.Tests
 {
     public class NethereumTestsBase
     {
-        protected const string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\metadata";
+        protected const string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\platform\metadata";
         protected readonly IEnumerable<string> Contracts;
 
         protected string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";

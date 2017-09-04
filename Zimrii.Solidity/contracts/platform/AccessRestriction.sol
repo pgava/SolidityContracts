@@ -6,7 +6,7 @@ contract AccessRestriction {
     // These will be assigned at the construction
     // phase, where msg.sender is the account
     // creating this contract.
-    address _owner = msg.sender;
+    address private _owner = msg.sender;
 
     // Default constructor.
     // The only reason to be here is for Nethereum:
