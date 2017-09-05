@@ -1,136 +1,103 @@
 pragma solidity ^0.4.10;
-import "./AccessRestriction.sol";
 
-// Implements the storage of the artist royalties.
-// The underline structure maps a royalties guid to a royalties hash.
-// The guids are a reference to the Zimrii database.
-// The hash must match the data stored in the zimrii database.
-// From the royalties guid is possible to get the royalties hash and
-// the resource endpoint url from where to get all the data stored
-// in the Zinrii database.
-contract ArtistRoyalties is AccessRestriction {
+import "./AccessControl.sol";
 
-    // Default constructor.
-    // The only reason to be here is for Nethereum:
-    // System.NullReferenceException : Object reference not set to an instance of an object.
-    // at Nethereum.Web3.DeployContract.BuildEncodedData(String abi, String contractByteCode, Object[] values)
+/// @title Implements the storage of the artist royalties.
+/// The underline structure maps a royalties guid to a royalties hash.
+/// The guids are a reference to the Zimrii database.
+/// The hash must match the data stored in the zimrii database.
+/// From the royalties guid is possible to get the royalties hash and
+/// the resource endpoint url from where to get all the data stored
+/// in the Zinrii database.
+contract ArtistRoyalties is AccessControl {
+
+    /* Default constructor.
+     * The only reason to be here is for Nethereum:
+     * System.NullReferenceException : Object reference not set to an instance of an object.
+     * at Nethereum.Web3.DeployContract.BuildEncodedData(String abi, String contractByteCode, Object[] values)
+     */
     function ArtistRoyalties() { }
 
-    // Event triggered when a royalties is set.
-    // Params:
-    // royaltiesId: The royalties guid. It's an indexed patameter.
-    // royaltiesHash: The hash of the royalties.
-    event SetRoyalties(
-        bytes32 indexed royaltiesId, 
-        bytes32 royaltiesHash
-    );
+    /* Event triggered when a royalties is set. */
+    event SetRoyalties(bytes32 indexed royaltiesId, bytes32 royaltiesHash);
 
-    // Royalties structure.
+    /* Royalties structure. */
     struct RoyaltiesData {
-        // Used to check if the record exists
+        /* Used to check if the record exists. */
         bool exists;
-        // Represents the hash of the royalties
+        /* Represents the hash of the royalties. */
         bytes32 royaltiesHash;
     }
     
-    // Holds the root endpoint url.
-    // This is used to build the endpoint for a royalties.
-    // For example: https://zimrii.api.com/royalties/<royalties guid>
-    string royaltiesEndpointResourceRoot = "";
+    /* Holds the root endpoint url.
+     * This is used to build the endpoint for a royalties.
+     * For example: https://zimrii.api.com/royalties/<royalties guid>
+     */
+    string private royaltiesEndpointResourceRoot = "";
 
-    // Holds all the mappings for royalties
-    mapping(bytes32 => RoyaltiesData) royalties;
+    /* Holds all the mappings for royalties. */
+    mapping(bytes32 => RoyaltiesData) private royalties;
     
-    // Sets a royalties into the mapping
-    // Params:
-    // musicId: the guid of the music
-    // copyrightId: the guid of the copyright
-    // Remarks:
-    // Can only be executed by Zimrii
-    function setRoyalties(
-        bytes32 royaltiesId,
-        bytes32 royaltiesHash
-    ) onlyOwner 
-    {
+    /// @notice Sets a royalties into the mapping.
+    /// @param _royaltiesId The guid of the music.
+    /// @param _royaltiesHash The guid of the copyright.
+    function setRoyalties(bytes32 _royaltiesId, bytes32 _royaltiesHash) onlyOwner {
         
-        royalties[royaltiesId] = RoyaltiesData(true,  royaltiesHash);   
+        royalties[_royaltiesId] = RoyaltiesData(true,  _royaltiesHash);   
 
         // todo: do I need to return also  data: {'endpoint': 'xxxx'}
-        SetRoyalties(royaltiesId, royaltiesHash);
+        SetRoyalties(_royaltiesId, _royaltiesHash);
     }
 
-    // Gets the royalties hash
-    // Params:
-    // royaltiesId: The guid of the royalties
-    // Returns:
-    // The hash of the royalties
-    function getRoyaltiesHash(
-        bytes32 royaltiesId
-    ) constant returns (bytes32 res) 
-    {
+    /// @notice Gets the royalties hash.
+    /// @param _royaltiesId The guid of the royalties.
+    /// @return The hash of the royalties.
+    function getRoyaltiesHash(bytes32 _royaltiesId) constant returns (bytes32 res) {
          res = "";
         
-        if (royalties[royaltiesId].exists) {
-            RoyaltiesData memory r = royalties[royaltiesId];            
+        if (royalties[_royaltiesId].exists) {
+            RoyaltiesData memory r = royalties[_royaltiesId];            
             res = r.royaltiesHash;
         }
 
         return res;
     }
 
-    // Sets the root endpoint for royalties references
-    // Params:
-    // endpoint: the root endpoint    
-    function setRoyaltiesEndpointResourceRoot(
-        string endpoint
-    ) onlyOwner 
-    {
-        
-        royaltiesEndpointResourceRoot = endpoint;
+    /// @notice Sets the root endpoint for royalties references.
+    /// @param _endpoint the root endpoint.
+    function setRoyaltiesEndpointResourceRoot(string _endpoint) onlyOwner {
+        royaltiesEndpointResourceRoot = _endpoint;
     }
 
-    // Gets the endpoint for the royalties
-    // Params:
-    // royaltiesId: The guid of the royalties
-    // Returns:
-    // the endpoint for example https://zimrii.api.com/royalties/<royalties guid>
-    function getRoyaltiesResourceEndpoint(
-        bytes32 royaltiesId
-    ) constant returns (string res) 
-    {
+    /// @notice Gets the endpoint for the royalties.
+    /// @param _royaltiesId The guid of the royalties.
+    /// @return The endpoint for example https://zimrii.api.com/royalties/<royalties guid>.
+    function getRoyaltiesResourceEndpoint(bytes32 _royaltiesId) constant returns (string res) {
          res = "";
         
-        if (royalties[royaltiesId].exists) {                   
-            res = strConcat(royaltiesEndpointResourceRoot, royaltiesId);
+        if (royalties[_royaltiesId].exists) {                   
+            res = strConcat(royaltiesEndpointResourceRoot, _royaltiesId);
         }
 
         return res;
     }
 
-    /**
-     * Kill function to end the contract (useful for hard forks).
-     */
+    /// @notice Kill function to end the contract (useful for hard forks).
     function kill() onlyOwner returns(uint) {
         selfdestruct(msg.sender);
     }
 
-    // Concatenates a string to a bytes32
-    // Params:
-    // a: The frist string to concatenate
-    // b: The second bytes32 to concatenate
-    // Returns:
-    // a string which is a + b 
-    function strConcat(
-        string a, 
-        bytes32 b
-    ) internal returns (string) 
-    {
-        bytes memory ba = bytes(a);
+    /// @notice Concatenates a string to a bytes32
+    /// @param _a The frist string to concatenate
+    /// @param _b The second bytes32 to concatenate
+    /// @return A string which is _a + _b 
+    function strConcat(string _a, bytes32 _b) internal returns (string) {
+        bytes memory ba = bytes(_a);
 
-        // get length of bytes32
+        /// get length of bytes32
         uint len = 0;
         for (uint j = 0; j < 32; j++) {
-            byte c = byte(bytes32(uint(b) * 2 ** (8 * j)));
+            byte c = byte(bytes32(uint(_b) * 2 ** (8 * j)));
             if (c != 0) {
                 len += 1;
             }            
@@ -142,9 +109,8 @@ contract ArtistRoyalties is AccessRestriction {
         for (uint i = 0; i < ba.length; i++) {
             bab[k++] = ba[i];
         }
-
-        for (i = 0; i < b.length; i++) {
-            byte char = byte(bytes32(uint(b) * 2 ** (8 * i)));
+        for (i = 0; i < _b.length; i++) {
+            byte char = byte(bytes32(uint(_b) * 2 ** (8 * i)));
             if (char != 0) {
                 bab[k++] = char;
             }            
