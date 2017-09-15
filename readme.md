@@ -5,7 +5,7 @@ These are some example of smart contracts written for the Ethereum blockchain.
 
 They have been written with Solidity.
 
-For testing you can use geth to create a private test blockchain.
+For testing you can use geth (https://geth.ethereum.org/downloads/) to create a private test blockchain.
 
 use this as genesis block:
 ->genesis_dev.json
