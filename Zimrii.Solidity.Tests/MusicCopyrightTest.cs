@@ -15,6 +15,33 @@ namespace Zimrii.Solidity.Tests
         }
 
         [Fact]
+        public async Task MusicCopyrightSolTestCore2Test()
+        {
+            await Setup(true);
+
+            var contractAddress = Receipts["MusicCopyright"].ContractAddress;
+            var contract = Web3.Eth.GetContract(Abi["MusicCopyright"], contractAddress);
+
+            var setCopyrightEndpointResourceRoot = contract.GetFunction("setCopyrightEndpointResourceRoot");
+            var getCopyrightResourceEndpoint = contract.GetFunction("getCopyrightResourceEndpoint");
+
+            var unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
+
+            var transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
+                new HexBigInteger(200000), null, null,
+                @"http:\\api.zimrii\");
+
+            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
+
+            var res4 = await getCopyrightResourceEndpoint.CallAsync<string>();
+            res4.Should().Be("");
+
+        }
+
+        [Fact]
         public async Task MusicCopyrightSolTest()
         {
             await Setup(true);

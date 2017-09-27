@@ -5,15 +5,16 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Nethereum.Geth;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 
-namespace Zimrii.Solidity.Tests
+namespace Zimrii.SolidityCore2.Tests
 {
     public class NethereumTestsBase
     {
-        protected string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\platform\metadata";
+        protected const string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\platform\metadata";
         protected readonly IEnumerable<string> Contracts;
 
         protected string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
@@ -45,9 +46,10 @@ namespace Zimrii.Solidity.Tests
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash, bool isMining)
         {
             bool miningResult = true;
+            var web3Geth = new Web3Geth();
             if (isMining)
             {
-                miningResult = await web3.Miner.Start.SendRequestAsync(20);
+                miningResult = await web3Geth.Miner.Start.SendRequestAsync(20);
                 // geth 1.6+ this is not working
                 //miningResult.Should().BeTrue();
             }
@@ -62,7 +64,7 @@ namespace Zimrii.Solidity.Tests
 
             if (isMining)
             {
-                miningResult = await web3.Miner.Stop.SendRequestAsync();
+                miningResult = await web3Geth.Miner.Stop.SendRequestAsync();
                 miningResult.Should().BeTrue();
             }
 
@@ -113,7 +115,7 @@ namespace Zimrii.Solidity.Tests
             return codes;
         }
 
-        protected virtual async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining)
+        protected async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining)
         {
             var receipts = new Dictionary<string, TransactionReceipt>();
 
@@ -127,7 +129,8 @@ namespace Zimrii.Solidity.Tests
                 switch (contract)
                 {
                     default:
-                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, new HexBigInteger(2000000));
+                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, 
+                            new HexBigInteger(2000000), new HexBigInteger(2000000));
                         break;
                 }
 

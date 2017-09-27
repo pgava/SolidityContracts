@@ -2,8 +2,9 @@ pragma solidity ^0.4.13;
 
 import "./TokenRecipient.sol";
 import "./TokenData.sol";
+import "./Owned.sol";
 
-contract TokenBase { 
+contract TokenBase is Owned { 
     /* Public variables of the token */ 
     string public name; 
     string public symbol; 
@@ -25,30 +26,26 @@ contract TokenBase {
     /* Initializes contract with initial supply tokens to the creator of the contract */
     function TokenBase(
         address tokenData,
-        uint256 initialSupply,
         string tokenName,
         uint8 decimalUnits,
         string tokenSymbol
         ) {
         _tokenData = tokenData;
-        TokenData database = TokenData(_tokenData);
-        database.setBalanceOf(msg.sender, initialSupply); // Give the creator all initial tokens
-        totalSupply = initialSupply;                        // Update total supply
-        name = tokenName;                                   // Set the name for display purposes
-        symbol = tokenSymbol;                               // Set the symbol for display purposes
-        decimals = decimalUnits;                            // Amount of decimals for display purposes
+        name = tokenName;         // Set the name for display purposes
+        symbol = tokenSymbol;     // Set the symbol for display purposes
+        decimals = decimalUnits;  // Amount of decimals for display purposes
     }
 
     /* ERC-20 standard interface -> */
     
     /// @notice Total amount of tokens
-    function totalSupply() constant returns (uint256) {
+    function totalSupply() constant public returns (uint256) {
         return totalSupply;
     }
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return The balance
-    function balanceOf(address _owner) constant returns (uint256) {
+    function balanceOf(address _owner) constant public returns (uint256) {
         TokenData database = TokenData(_tokenData);
         uint256 balance = database.getBalanceOf(_owner);
         return balance;
@@ -57,7 +54,7 @@ contract TokenBase {
     /// @notice Send `_value` tokens to `_to` from your account
     /// @param _to The address of the recipient
     /// @param _value the amount to send
-    function transfer(address _to, uint256 _value) returns (bool) {
+    function transfer(address _to, uint256 _value) public returns (bool) {
         _transfer(msg.sender, _to, _value);
         return true;
     }
@@ -66,7 +63,7 @@ contract TokenBase {
     /// @param _from The address of the sender
     /// @param _to The address of the recipient
     /// @param _value the amount to send
-    function transferFrom(address _from, address _to, uint256 _value) returns (bool) {
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         TokenData database = TokenData(_tokenData);
         uint256 fromAllowance = database.getAllowance(_from, msg.sender);
 
@@ -79,7 +76,7 @@ contract TokenBase {
     /// @notice Allows `_spender` to spend no more than `_value` tokens in your behalf
     /// @param _spender The address authorized to spend
     /// @param _value the max amount they can spend
-    function approve(address _spender, uint256 _value) returns (bool) {
+    function approve(address _spender, uint256 _value) public returns (bool) {
         TokenData database = TokenData(_tokenData);
         database.setAllowance(msg.sender, _spender, _value);
         Approval(msg.sender, _spender, _value);
@@ -89,7 +86,7 @@ contract TokenBase {
     /// @param _owner The address of the account owning tokens
     /// @param _spender The address of the account able to transfer the tokens
     /// @return Amount of remaining tokens allowed to spent
-    function allowance(address _owner, address _spender) constant returns (uint256) {
+    function allowance(address _owner, address _spender) constant public returns (uint256) {
         TokenData database = TokenData(_tokenData);
         uint256 remaining = database.getAllowance(_owner, _spender);
         return remaining;
@@ -115,7 +112,7 @@ contract TokenBase {
     /// @param _spender The address authorized to spend
     /// @param _value the max amount they can spend
     /// @param _extraData some extra information to send to the approved contract
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public returns (bool success) {
         TokenRecipient spender = TokenRecipient(_spender);
         if (approve(_spender, _value)) {
             spender.receiveApproval(msg.sender, _value, this, _extraData);
@@ -125,7 +122,7 @@ contract TokenBase {
 
     /// @notice Remove `_value` tokens from the system irreversibly
     /// @param _value the amount of money to burn
-    function burn(uint256 _value) returns (bool) {
+    function burn(uint256 _value) public returns (bool) {
         TokenData database = TokenData(_tokenData);
         uint256 senderValue = database.getBalanceOf(msg.sender);
         
@@ -136,7 +133,10 @@ contract TokenBase {
         return true;
     }
 
-    function burnFrom(address _from, uint256 _value) returns (bool) {
+    /// @notice Remove `_value` tokens from the system irreversibly
+    /// @param _from account to remove from
+    /// @param _value the amount of money to burn
+    function burnFrom(address _from, uint256 _value) public returns (bool) {
         TokenData database = TokenData(_tokenData);
         uint256 fromBalance = database.getBalanceOf(_from);
         uint256 fromAllowance = database.getAllowance(_from, msg.sender);
@@ -148,5 +148,13 @@ contract TokenBase {
         totalSupply -= _value;                                              // Update totalSupply
         Burn(_from, _value);
         return true;
+    }
+
+    /// @notice Sets the total supply of coins
+    /// @param _initialSupply the max amount they can spend
+    function setTotalSupply(uint256 _initialSupply) public onlyOwner {
+        TokenData database = TokenData(_tokenData);
+        database.setBalanceOf(msg.sender, _initialSupply);   // Give the creator all initial tokens
+        totalSupply = _initialSupply;                        // Update total supply
     }
 }
