@@ -5,7 +5,9 @@ import "./Owned.sol";
 /// @title Implements the token database
 contract TokenData is Owned { 
     
-    function TokenData() {}
+    function TokenData() {
+        owners[msg.sender] = true;
+    }
 
     /* This creates an array with all balances */
     mapping (address => uint256) private balanceOf;

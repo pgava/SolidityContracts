@@ -155,6 +155,6 @@ contract TokenBase is Owned {
     function setTotalSupply(uint256 _initialSupply) public onlyOwner {
         TokenData database = TokenData(_tokenData);
         database.setBalanceOf(msg.sender, _initialSupply);   // Give the creator all initial tokens
-        totalSupply = _initialSupply;                        // Update total supply
+        totalSupply = database.getBalanceOf(msg.sender);     // Update total supply
     }
 }

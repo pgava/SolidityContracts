@@ -14,11 +14,10 @@ contract ZimcoToken is Owned, TokenBase {
   /* Initializes contract with initial supply tokens to the creator of the contract */
   function ZimcoToken(
       address tokenData,
-      uint256 initialSupply,
       string tokenName,
       uint8 decimalUnits,
       string tokenSymbol
-    ) TokenBase (tokenData, initialSupply, tokenName, decimalUnits, tokenSymbol) {
+    ) TokenBase (tokenData, tokenName, decimalUnits, tokenSymbol) {
 
     }
 
