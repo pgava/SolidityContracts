@@ -13,7 +13,7 @@ namespace Zimrii.Solidity.Tests
     public class ZimcoTest : NethereumTestsBase
     {
 
-        public ZimcoTest() : base(new[] { "owned", "TokenData", "TokenBase", "ZimcoToken" }) //"tokenRecipient", 
+        public ZimcoTest() : base(new[] { "owned", "TokenData", "ZimcoToken" }) //"TokenBase", "tokenRecipient", 
         {
             RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\zimco\metadata";
         }
@@ -83,18 +83,23 @@ namespace Zimrii.Solidity.Tests
                 await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
+            // give Zimco access to database
             var transactionHash1 = await changeOwners.SendTransactionAsync(AccountAddress, contractZimcoAddress, true);
             var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash1, true);
 
+            // set initial supply
             var transactionHash2 = await setTotalSupply.SendTransactionAsync(AccountAddress, 5000000);
             var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash2, true);
 
+            // transfer funds
             var transactionHash3 = await transfer.SendTransactionAsync(AccountAddress, "0x13f022d72158410433cbd66f5dd8bf6d2d129924", 750000);
             var receipt3 = await MineAndGetReceiptAsync(Web3, transactionHash3, true);
 
+            // read the log
             var log = await transferEvent.GetFilterChanges<TransferEvent>(filterAll);
             log.Count.Should().Be(1);
 
+            // check the balance after transfer
             var res3 = await balanceOf.CallAsync<int>(AccountAddress);
             res3.Should().Be(5000000 - 750000);
         }
