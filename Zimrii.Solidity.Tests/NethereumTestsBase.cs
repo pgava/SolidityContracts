@@ -29,10 +29,10 @@ namespace Zimrii.Solidity.Tests
             Web3 = new Web3();
         }
 
-        protected async Task Setup(bool isMining)
+        protected async Task Setup(bool isMining, Action<Dictionary<string, TransactionReceipt>> saveContract = null)
         {
             ReadContractsDetails();
-            Receipts = await DeployContract(Web3, Contracts, isMining);
+            Receipts = await DeployContract(Web3, Contracts, isMining, saveContract);
         }
 
         protected void ReadContractsDetails()
@@ -113,7 +113,8 @@ namespace Zimrii.Solidity.Tests
             return codes;
         }
 
-        protected virtual async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining)
+        protected virtual async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining, 
+            Action<Dictionary<string, TransactionReceipt>> saveContract = null)
         {
             var receipts = new Dictionary<string, TransactionReceipt>();
 
@@ -135,6 +136,8 @@ namespace Zimrii.Solidity.Tests
 
                 receipts.Add(contract, receipt);
             }
+
+            saveContract?.Invoke(receipts);
 
             return receipts;
         }

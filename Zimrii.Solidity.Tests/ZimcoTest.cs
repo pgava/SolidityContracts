@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
@@ -6,6 +8,7 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.DebugGeth.DTOs;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
+using Serilog;
 using Xunit;
 
 namespace Zimrii.Solidity.Tests
@@ -13,12 +16,21 @@ namespace Zimrii.Solidity.Tests
     public class ZimcoTest : NethereumTestsBase
     {
 
-        public ZimcoTest() : base(new[] { "owned", "TokenData", "ZimcoToken" }) //"TokenBase", "tokenRecipient", 
+        public ZimcoTest() : base(new[] { "owned", "TokenData", "ZimcoToken" }) 
         {
             RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\zimco\metadata";
+            string curDir = AssemblyDirectory;
+            var logPath = Path.Combine(curDir + RootPath, @"..\Zimco-{Date}.txt");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.RollingFile(logPath)
+                .CreateLogger();
+
         }
 
-        protected override async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining)
+        protected override async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining,
+            Action<Dictionary<string, TransactionReceipt>> saveContract = null)
         {
             var receipts = new Dictionary<string, TransactionReceipt>();
 
@@ -51,13 +63,32 @@ namespace Zimrii.Solidity.Tests
                 receipts.Add(contract, receipt);
             }
 
+            saveContract?.Invoke(receipts);
             return receipts;
         }
 
         [Fact]
-        public async Task DeployZimcoTest()
+        public async Task DeployZimcoToRinkeby()
         {
-            await Setup(true);
+            await Setup(true, SaveZimcoDetails);
+        }
+
+        void SaveZimcoDetails(Dictionary<string, TransactionReceipt> receipts)
+        {
+            foreach (var receipt in receipts)
+            {
+                Log.Information(receipt.Key);
+                Log.Information("{@zimco}", new
+                {
+                    AccountAddress = AccountAddress,
+                    TransactionHash = receipt.Value.TransactionHash,
+                    ContractAddress = receipt.Value.ContractAddress,
+                    BlockHash = receipt.Value.BlockHash,
+                    CumulativeGasUsed = receipt.Value.CumulativeGasUsed.Value.ToString(),
+                    GasUsed = receipt.Value.GasUsed.Value.ToString(),
+                    TransactionIndex = receipt.Value.TransactionIndex.Value.ToString()
+                });
+            }
         }
 
         [Fact]
