@@ -1,7 +1,0 @@
-Transaction Hash: 0xade8d0e2afec8759ba8680e4060f5819ce4fb245c722ae8621806f7d8a27d9ff
-Contract Addres: 0x0ef8e0ca8722bd02c519b2e7b43a8b2193477961
-Block Hash: 0xdd05a1f57681a0f6241e83744d8eefa16b505b2b00337edd3b980c2a0ee0fe4c
-Block Number: 763433
-Cumulative Gas Used: 140052
-Gas Used: 140052
-Transaction Index: 0

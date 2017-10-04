@@ -58,6 +58,10 @@ namespace Zimrii.Solidity.Tests
             {
                 Thread.Sleep(1000);
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+
+                var unlockResult =
+                    await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+                unlockResult.Should().BeTrue();
             }
 
             if (isMining)

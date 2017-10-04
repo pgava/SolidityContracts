@@ -26,7 +26,10 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task DeployZimriiToRinkeby()
         {
-            await Setup(true, SaveZimriiDetails);
+            AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
+            PassPhrase = "";
+
+            await Setup(false, SaveZimriiDetails);
         }
 
         void SaveZimriiDetails(Dictionary<string, TransactionReceipt> receipts)
