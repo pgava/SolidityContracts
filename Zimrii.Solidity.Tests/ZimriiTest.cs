@@ -24,7 +24,7 @@ namespace Zimrii.Solidity.Tests
         }
 
         [Fact]
-        public async Task DeployZimcoToRinkeby()
+        public async Task DeployZimriiToRinkeby()
         {
             await Setup(true, SaveZimriiDetails);
         }
