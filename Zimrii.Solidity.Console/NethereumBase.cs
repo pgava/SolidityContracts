@@ -4,18 +4,18 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using FluentAssertions;
+using Nethereum.Geth;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 
-namespace Zimrii.Solidity.Tests
+namespace Zimrii.Solidity.Console
 {
-    public class NethereumTestsBase
+    public class NethereumBase
     {
-        protected string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\platform\metadata";
         protected readonly IEnumerable<string> Contracts;
 
+        protected string RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\platform\metadata";
         protected string AccountAddress = "0x12890d2cce102216644c59dae5baed380d84830c";
         protected string PassPhrase = "password";
         protected Dictionary<string, TransactionReceipt> Receipts;
@@ -23,7 +23,7 @@ namespace Zimrii.Solidity.Tests
         protected Dictionary<string, string> Code;
         protected Web3 Web3;
 
-        public NethereumTestsBase(IEnumerable<string> contracts)
+        public NethereumBase(IEnumerable<string> contracts)
         {
             Contracts = contracts;
             Web3 = new Web3();
@@ -45,12 +45,10 @@ namespace Zimrii.Solidity.Tests
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash, bool isMining)
         {
             bool miningResult = true;
-
+            var web3Geth = new Web3Geth();
             if (isMining)
             {
-                // TODO : where is miner now?
-                //miningResult = await web3.Miner.Start.SendRequestAsync(20);
-
+                miningResult = await web3Geth.Miner.Start.SendRequestAsync(20);
                 // geth 1.6+ this is not working
                 //miningResult.Should().BeTrue();
             }
@@ -61,18 +59,11 @@ namespace Zimrii.Solidity.Tests
             {
                 Thread.Sleep(1000);
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-
-                var unlockResult =
-                    await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
-                unlockResult.Should().BeTrue();
             }
 
             if (isMining)
             {
-                // TODO
-                //miningResult = await web3.Miner.Stop.SendRequestAsync();
-
-                miningResult.Should().BeTrue();
+                miningResult = await web3Geth.Miner.Stop.SendRequestAsync();
             }
 
             return receipt;
@@ -122,14 +113,17 @@ namespace Zimrii.Solidity.Tests
             return codes;
         }
 
-        protected virtual async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining, 
-            Action<Dictionary<string, TransactionReceipt>> saveContract = null)
+        protected async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining, Action<Dictionary<string, TransactionReceipt>> saveContract = null)
         {
             var receipts = new Dictionary<string, TransactionReceipt>();
 
             var unlockResult =
-                await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);            
-            unlockResult.Should().BeTrue();
+                await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);  
+            
+            if (!unlockResult)
+            {
+                throw new ApplicationException("Couldn't unlock");
+            }
 
             foreach (var contract in contracts)
             {
@@ -137,7 +131,8 @@ namespace Zimrii.Solidity.Tests
                 switch (contract)
                 {
                     default:
-                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, new HexBigInteger(2000000));
+                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, 
+                            new HexBigInteger(2000000), new HexBigInteger(2000000));
                         break;
                 }
 
@@ -145,8 +140,6 @@ namespace Zimrii.Solidity.Tests
 
                 receipts.Add(contract, receipt);
             }
-
-            saveContract?.Invoke(receipts);
 
             return receipts;
         }

@@ -14,7 +14,7 @@ namespace Zimrii.Solidity.Tests
         {
 
             string curDir = AssemblyDirectory;
-            var logPath = Path.Combine(curDir + RootPath, @"..\Zimrii-{Date}.txt");
+            var logPath = Path.Combine(curDir + RootPath, @"Zimrii-{Date}.txt");
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -26,10 +26,10 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task DeployZimriiToRinkeby()
         {
-            AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
-            PassPhrase = "";
+            //AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
+            //PassPhrase = "";
 
-            await Setup(false, SaveZimriiDetails);
+            await Setup(true, SaveZimriiDetails);
         }
 
         void SaveZimriiDetails(Dictionary<string, TransactionReceipt> receipts)

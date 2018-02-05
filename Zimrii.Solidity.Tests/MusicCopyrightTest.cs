@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.DebugGeth.DTOs;
+//using Nethereum.RPC.DebugGeth.DTOs;
 using Xunit;
 
 namespace Zimrii.Solidity.Tests
@@ -91,8 +91,8 @@ namespace Zimrii.Solidity.Tests
 
             var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
-            var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
-                new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
+            //var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
+            //    new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
 
             var log = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterAll);
             log.Count.Should().Be(1);
@@ -119,7 +119,7 @@ namespace Zimrii.Solidity.Tests
             AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
             PassPhrase = "";
 
-            var contractAddress = "0x3eda8064f0459a6e8566e261067bc3e61a5ef2be";
+            var contractAddress = "0x25ae92dbd796f3ad53dd2af5f88f48058692057e";
             var contract = Web3.Eth.GetContract(Abi["MusicCopyright"], contractAddress);
 
             var addCopyrightEvent = contract.GetEvent("SetCopyright");
@@ -146,12 +146,12 @@ namespace Zimrii.Solidity.Tests
             unlockResult.Should().BeTrue();
 
             transactionHash = await setCopyrightEndpointResourceRoot.SendTransactionAsync(AccountAddress,
-                @"http:\\api.zimrii\");
+                @"http:\\api.zimrii.com\");
 
             var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, false);
 
-            var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
-                new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
+            //var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
+            //    new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
 
             var log = await addCopyrightEvent.GetFilterChanges<AddCopyrightEvent>(filterAll);
             log.Count.Should().Be(1);

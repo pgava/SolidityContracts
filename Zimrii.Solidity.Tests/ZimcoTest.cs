@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.DebugGeth.DTOs;
+//using Nethereum.RPC.DebugGeth.DTOs;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
 using Serilog;

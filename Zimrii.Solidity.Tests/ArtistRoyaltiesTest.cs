@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Hex.HexTypes;
-using Nethereum.RPC.DebugGeth.DTOs;
+//using Nethereum.RPC.DebugGeth.DTOs;
 using Xunit;
 
 namespace Zimrii.Solidity.Tests
@@ -63,8 +63,8 @@ namespace Zimrii.Solidity.Tests
 
             var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
-            var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
-                new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
+            //var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
+            //    new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
 
             var log = await addRoyaltiesEvent.GetFilterChanges<AddRoyaltiesEvent>(filterAll);
             log.Count.Should().Be(1);
