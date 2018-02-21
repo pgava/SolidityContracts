@@ -1,0 +1,18 @@
+﻿@model  Zimrii.Solidity.Admin.Models.EthereumAccountModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Environment</h2>
+
+        <form asp-controller="Home" asp-action="Index" method="post">
+
+            <select asp-for="SolidityEnvironment" asp-items="Model.SolidityEnvironments"></select>
+            
+            <button type="submit">Unlock</button>
+        </form>
+
+    </div>
+</div>

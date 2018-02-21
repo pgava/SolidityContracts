@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.Solidity", "Zimrii.Solidity\Zimrii.Solidity.csproj", "{050A3C9E-92BA-4AD0-BD63-8684E27E61B8}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.Solidity.Tests", "Zi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.SolidityCore2.Tests", "Zimrii.SolidityCore2.Tests\Zimrii.SolidityCore2.Tests.csproj", "{60948A3F-5473-4805-A053-7B0085A1F9AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zimrii.Solidity.Console", "Zimrii.Solidity.Console\Zimrii.Solidity.Console.csproj", "{FC3BFBEF-ADAD-49A9-B367-B2CB7A97E2A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zimrii.Solidity.Console", "Zimrii.Solidity.Console\Zimrii.Solidity.Console.csproj", "{FC3BFBEF-ADAD-49A9-B367-B2CB7A97E2A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zimrii.Solidity.Admin", "Zimrii.Solidity.Admin\Zimrii.Solidity.Admin.csproj", "{3DE3B643-A15A-484B-A4C0-3C993429AEE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{FC3BFBEF-ADAD-49A9-B367-B2CB7A97E2A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC3BFBEF-ADAD-49A9-B367-B2CB7A97E2A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC3BFBEF-ADAD-49A9-B367-B2CB7A97E2A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DE3B643-A15A-484B-A4C0-3C993429AEE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE3B643-A15A-484B-A4C0-3C993429AEE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE3B643-A15A-484B-A4C0-3C993429AEE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE3B643-A15A-484B-A4C0-3C993429AEE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
