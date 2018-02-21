@@ -1,18 +1,30 @@
-﻿@model  Zimrii.Solidity.Admin.Models.EthereumAccountModel
+﻿@model Zimrii.Solidity.Admin.Models.EthereumAccountModel
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="row">
     <div class="col-md-12">
-        <h2>Environment</h2>
+        <h2>Select Environment</h2>
 
-        <form asp-controller="Home" asp-action="Index" method="post">
-
-            <select asp-for="SolidityEnvironment" asp-items="Model.SolidityEnvironments"></select>
-            
-            <button type="submit">Unlock</button>
+        <form asp-controller="Home" asp-action="Index" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="env">Environment:</label>
+                <div class="col-sm-6">
+                    <select class="form-control" id="env" name="env" asp-for="SolidityEnvironment" asp-items="Model.SolidityEnvironments"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">Password:</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="pwd" name="pwd">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-default">Unlock</button>
         </form>
 
+        <div class="alert alert-@Model.UnlockResultType" data-bind="visible: ShowUnlockResult" style="margin-top:30px;">
+            @Model.UnlockResult
+        </div>
     </div>
 </div>

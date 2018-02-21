@@ -9,12 +9,16 @@ namespace Zimrii.Solidity.Admin.Controllers
         protected readonly IHostingEnvironment hostingEnvironment;
         protected readonly ISolidityInfrastructure solidityInfrastructure;
         protected readonly ISolidityService solidityService;
+        protected readonly INethereumService nethereumService;
 
-        public SolidityBaseController(IHostingEnvironment hostingEnvironment, ISolidityInfrastructure solidityInfrastructure, ISolidityService solidityService)
+        public SolidityBaseController(IHostingEnvironment hostingEnvironment, ISolidityInfrastructure solidityInfrastructure, 
+            ISolidityService solidityService, INethereumService nethereumService)
         {
             this.hostingEnvironment = hostingEnvironment;
             this.solidityInfrastructure = solidityInfrastructure;
             this.solidityService = solidityService;
+            this.nethereumService = nethereumService;
         }
+
     }
 }

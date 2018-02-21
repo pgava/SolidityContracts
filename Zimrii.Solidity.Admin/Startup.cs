@@ -25,6 +25,7 @@ namespace Zimrii.Solidity.Admin
 
             services.AddScoped<ISolidityService, SolidityService>();
             services.AddScoped<ISolidityInfrastructure, SolidityInfrastructure>();
+            services.AddScoped<INethereumService, NethereumService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
