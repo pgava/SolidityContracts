@@ -12,6 +12,7 @@ namespace Zimrii.Solidity.Admin.Controllers
 {
     public class HomeController : SolidityBaseController
     {
+        // Ctor
         public HomeController(IHostingEnvironment hostingEnvironment, ISolidityInfrastructure solidityInfrastructure, 
             ISolidityService solidityService, INethereumService nethereumService)
             : base(hostingEnvironment, solidityInfrastructure, solidityService, nethereumService)
