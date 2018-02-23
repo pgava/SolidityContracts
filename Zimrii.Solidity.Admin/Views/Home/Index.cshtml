@@ -9,9 +9,9 @@
 
         <form asp-controller="Home" asp-action="Index" method="post" class="form-horizontal">
             <div class="form-group">
-                <label class="control-label col-sm-2" for="env">Environment:</label>
+                <label class="control-label col-sm-2" for="SolidityEnvironment">Environment:</label>
                 <div class="col-sm-6">
-                    <select class="form-control" id="env" name="env" asp-for="SolidityEnvironment" asp-items="Model.SolidityEnvironments"></select>
+                    <select class="form-control" asp-for="SolidityEnvironment" asp-items="Model.SolidityEnvironments"></select>
                 </div>
             </div>
             <div class="form-group">

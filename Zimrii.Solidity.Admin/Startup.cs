@@ -22,6 +22,7 @@ namespace Zimrii.Solidity.Admin
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSession();
 
             services.AddScoped<ISolidityService, SolidityService>();
             services.AddScoped<ISolidityInfrastructure, SolidityInfrastructure>();
@@ -43,6 +44,10 @@ namespace Zimrii.Solidity.Admin
 
             app.UseStaticFiles();
 
+            // IMPORTANT: This session call MUST go before UseMvc()
+            app.UseSession();
+
+            // Add MVC to the request pipeline.
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

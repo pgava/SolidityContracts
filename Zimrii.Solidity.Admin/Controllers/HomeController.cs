@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Zimrii.Solidity.Admin.Models;
 using Zimrii.Solidity.Admin.Services;
@@ -21,7 +22,6 @@ namespace Zimrii.Solidity.Admin.Controllers
         public IActionResult Index()
         {
             var eth = solidityService.GetEthAccount(solidityInfrastructure, SolidityEnvironment.Test);
-            //var royalties = solidityService.GetRoyalties(solidityInfrastructure, SolidityEnvironment.Test);
 
             return View(new EthereumAccountModel
             {
@@ -32,17 +32,19 @@ namespace Zimrii.Solidity.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(string env, string pwd)
+        public IActionResult Index(string solidityEnvironment, string pwd)
         {
             EthAccount eth = null;
             SolidityEnvironment solEnv = SolidityEnvironment.Test;
 
-            if (env == SolidityEnvironment.Production.ToString())
+            if (solidityEnvironment == SolidityEnvironment.Production.ToString())
             {
                 eth = solidityService.GetEthAccount(solidityInfrastructure, SolidityEnvironment.Production);
             }
 
             eth = solidityService.GetEthAccount(solidityInfrastructure, solEnv);
+
+            HttpContext.Session.SetString("Environment", solEnv.ToString());
 
             //var res = nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);
             var res = false;
@@ -54,20 +56,6 @@ namespace Zimrii.Solidity.Admin.Controllers
                 UnlockResult = res ? "All good, account unlocked" : "Couldn't unlock the account",
                 UnlockResultType = res ? "info" : "danger"
             });
-        }
-
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
         }
 
         public IActionResult Error()

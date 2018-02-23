@@ -1,0 +1,31 @@
+﻿@model Zimrii.Solidity.Admin.Models.RoyaltiesModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Select Environment</h2>
+
+        <form asp-controller="Royalties" asp-action="Deploy" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="Abi">Abi:</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" asp-for="Abi"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="Bin">Bin:</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" asp-for="Bin"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-default">Deploy</button>
+        </form>
+
+        <div class="alert alert-@Model.DeployResultType" data-bind="visible: ShowDeployResult" style="margin-top:30px;">
+            @Model.DeployResult
+        </div>
+    </div>
+</div>
