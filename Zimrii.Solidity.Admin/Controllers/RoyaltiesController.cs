@@ -19,13 +19,9 @@ namespace Zimrii.Solidity.Admin.Controllers
 
         public IActionResult Index()
         {
-            string env = HttpContext.Session.GetString("Environment");
+            var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
-            var royalties = solidityService.GetRoyalties(solidityInfrastructure, SolidityEnvironment.Test);
-            if (env == SolidityEnvironment.Production.ToString())
-            {
-                royalties = solidityService.GetRoyalties(solidityInfrastructure, SolidityEnvironment.Production);
-            }
+            var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
 
             return View(new RoyaltiesModel
             {
@@ -38,16 +34,28 @@ namespace Zimrii.Solidity.Admin.Controllers
         [HttpPost]
         public IActionResult Deploy(RoyaltiesModel model)
         {
-            string env = HttpContext.Session.GetString("Environment");
+            var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
-            var royalties = solidityService.GetRoyalties(solidityInfrastructure, SolidityEnvironment.Test);
-            if (env == SolidityEnvironment.Production.ToString())
+            var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
+
+            // TODO - deploy
+
+            return View("Index", new RoyaltiesModel
             {
-                royalties = solidityService.GetRoyalties(solidityInfrastructure, SolidityEnvironment.Production);
-            }
+                Abi = royalties.Abi,
+                Bin = royalties.Bin,
+                ContractAddress = royalties.ContractAddress
+            });
+        }
 
-            
+        [HttpPost]
+        public IActionResult SetRoyalties(RoyaltiesModel model)
+        {
+            var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
+            var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
+
+            // TODO - deploy
 
             return View("Index", new RoyaltiesModel
             {

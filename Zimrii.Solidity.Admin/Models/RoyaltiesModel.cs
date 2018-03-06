@@ -20,7 +20,8 @@ namespace Zimrii.Solidity.Admin.Models
         public string Abi { get; set; }
         public string Bin { get; set; }
         public string ContractAddress { get; set; }
-
+        public string RoyaltiesGuid { get; set; }
+        public string RoyaltiesHash { get; set; }
 
         public bool ShowDeployResult { get; set; }
         public string DeployResultType { get; set; }

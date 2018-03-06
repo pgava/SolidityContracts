@@ -44,10 +44,17 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             eth = solidityService.GetEthAccount(solidityInfrastructure, solEnv);
 
-            HttpContext.Session.SetString("Environment", solEnv.ToString());
+            // TODO use another class 
+            HttpContext.Session.SetObjectAsJson("EthereumAccountModel", new EthereumAccountModel
+            {
+                AccountAddress = eth.AccountAddress,
+                Url = eth.Url,
+                SolidityEnvironment = solEnv
+            });
 
             //var res = nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);
-            var res = false;
+
+            var res = true;
             return View(new EthereumAccountModel
             {
                 AccountAddress = eth.AccountAddress,
