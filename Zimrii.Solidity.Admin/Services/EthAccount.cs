@@ -4,5 +4,6 @@
     {
         public string Url { get; set; }
         public string AccountAddress { get; set; }
+        public bool IsMine { get; set; }
     }
 }

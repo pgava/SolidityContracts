@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Zimrii.Solidity.Admin.Services;
 
 namespace Zimrii.Solidity.Admin
@@ -23,6 +26,7 @@ namespace Zimrii.Solidity.Admin
         {
             services.AddMvc();
             services.AddSession();
+            services.AddLogging();
 
             services.AddScoped<ISolidityService, SolidityService>();
             services.AddScoped<ISolidityInfrastructure, SolidityInfrastructure>();
@@ -30,8 +34,15 @@ namespace Zimrii.Solidity.Admin
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.RollingFile(Path.Combine(env.ContentRootPath, "log-{Date}.txt"))
+                .CreateLogger();
+
+            loggerFactory.AddSerilog();
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();

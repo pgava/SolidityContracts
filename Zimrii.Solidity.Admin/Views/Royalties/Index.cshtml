@@ -9,23 +9,40 @@
 
         <form asp-controller="Royalties" asp-action="Deploy" method="post" class="form-horizontal">
             <div class="form-group">
-                <label class="control-label col-sm-2" for="Abi">Abi:</label>
+                <label class="control-label col-sm-2" for="Abi">Royalties Abi:</label>
                 <div class="col-sm-8">
-                    <textarea class="form-control" asp-for="Abi"></textarea>
+                    <textarea class="form-control" asp-for="RoyaltiesAbi"></textarea>
                 </div>
             </div>
             <div class="form-group">
-                <label class="control-label col-sm-2" for="Bin">Bin:</label>
+                <label class="control-label col-sm-2" for="Bin">Royalties Bin:</label>
                 <div class="col-sm-8">
-                    <textarea class="form-control" asp-for="Bin"></textarea>
+                    <textarea class="form-control" asp-for="RoyaltiesBin"></textarea>
                 </div>
             </div>
-
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="Abi">Access Control Abi:</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" asp-for="AccessControlAbi"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="Bin">Access Control Bin:</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" asp-for="AccessControlBin"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">Password:</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="pwd" name="pwd">
+                </div>
+            </div>
             <button type="submit" class="btn btn-default">Deploy</button>
         </form>
 
-        <div class="alert alert-@Model.DeployResultType" data-bind="visible: ShowDeployResult" style="margin-top:30px;">
-            @Model.DeployResult
+        <div class="col-sm-8 alert alert-@Model.DeployResult.ResultType" data-bind="visible: @Model.DeployResult.ShowResult" style="margin-top:30px;">
+            @Model.DeployResult.Message
         </div>
     </div>
 </div>
@@ -47,12 +64,44 @@
                     <input class="form-control" asp-for="RoyaltiesHash" />
                 </div>
             </div>
-
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">Password:</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" id="pwd" name="pwd">
+                </div>
+            </div>
             <button type="submit" class="btn btn-default">Set Royalties</button>
         </form>
 
-        <div class="alert alert-@Model.DeployResultType" data-bind="visible: ShowDeployResult" style="margin-top:30px;">
-            @Model.DeployResult
+        <div class="col-sm-8 alert alert-@Model.SetRoyaltiesResult.ResultType" data-bind="visible: @Model.SetRoyaltiesResult.ShowResult" style="margin-top:30px;">
+            @Model.SetRoyaltiesResult.Message
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Get Royalties</h2>
+
+        <form asp-controller="Royalties" asp-action="GetRoyalties" method="post" class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="rguid">Royalties Guid:</label>
+                <div class="col-sm-8">
+                    <input class="form-control" asp-for="RoyaltiesGuid" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2" for="rhash">Royalties Hash:</label>
+                <div class="col-sm-8">
+                    <input class="form-control" asp-for="RoyaltiesHash" />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-default">Get Royalties</button>
+        </form>
+
+        <div class="col-sm-8 alert alert-@Model.GetRoyaltiesResult.ResultType" data-bind="visible: @Model.GetRoyaltiesResult.ShowResult" style="margin-top:30px;">
+            @Model.GetRoyaltiesResult.Message
         </div>
     </div>
 </div>

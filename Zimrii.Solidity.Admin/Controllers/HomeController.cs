@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Zimrii.Solidity.Admin.Models;
 using Zimrii.Solidity.Admin.Services;
 
@@ -13,11 +10,15 @@ namespace Zimrii.Solidity.Admin.Controllers
 {
     public class HomeController : SolidityBaseController
     {
+        private readonly ILogger<HomeController> logger;
+
         // Ctor
         public HomeController(IHostingEnvironment hostingEnvironment, ISolidityInfrastructure solidityInfrastructure, 
-            ISolidityService solidityService, INethereumService nethereumService)
+            ISolidityService solidityService, INethereumService nethereumService, ILogger<HomeController> logger)
             : base(hostingEnvironment, solidityInfrastructure, solidityService, nethereumService)
-        { }
+        {
+            this.logger = logger;
+        }
 
         public IActionResult Index()
         {
@@ -52,7 +53,15 @@ namespace Zimrii.Solidity.Admin.Controllers
                 SolidityEnvironment = solEnv
             });
 
-            //var res = nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);
+            //var isUnlocked = nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);
+            var isUnlocked = true;
+
+            logger.LogInformation("{@zimco}", new
+            {
+                Url = eth.Url,
+                AccountAddress = eth.AccountAddress,
+                UnLock = isUnlocked
+            });
 
             var res = true;
             return View(new EthereumAccountModel

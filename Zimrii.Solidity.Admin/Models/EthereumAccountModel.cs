@@ -9,12 +9,14 @@ namespace Zimrii.Solidity.Admin.Models
     {
         public string Url { get; set; }
         public string AccountAddress { get; set; }
+        public bool IsMine { get; set; }
         public SolidityEnvironment SolidityEnvironment { get; set; }
 
         public IEnumerable<SelectListItem> SolidityEnvironments => new List<SelectListItem>
         {
             new SelectListItem{ Value = "Test", Text = "Test" },
-            new SelectListItem{ Value = "Production", Text = "Production" }
+            new SelectListItem{ Value = "Uat", Text = "Uat" },
+            new SelectListItem{ Value = "Prod", Text = "Production" }
         };
 
         public bool ShowUnlockResult { get; set; }

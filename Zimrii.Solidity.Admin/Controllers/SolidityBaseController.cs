@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Zimrii.Solidity.Admin.Services;
 
 namespace Zimrii.Solidity.Admin.Controllers

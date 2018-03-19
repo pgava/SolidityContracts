@@ -14,34 +14,45 @@ namespace Zimrii.Solidity.Admin.Services
             // Get directory content
             //IDirectoryContents contents = provider.GetDirectoryContents("");
 
-            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetEthAccountFileName()));
+            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetEthAccountFileName(environment)));
 
             var content = File.ReadAllText(fileInfo.PhysicalPath);
 
             return JsonConvert.DeserializeObject<EthAccount>(content);
         }
 
+        public void SetRoyalties(ISolidityInfrastructure solidityInfrastructure, SolidityEnvironment environment, Royalties royalties)
+        {
+            IFileProvider provider = new PhysicalFileProvider(solidityInfrastructure.Location);
+
+            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetRoyaltiesFileName(environment)));
+
+            var content = JsonConvert.SerializeObject(royalties);
+
+            File.WriteAllText(fileInfo.PhysicalPath, content);
+        }
+
         public Royalties GetRoyalties(ISolidityInfrastructure solidityInfrastructure, SolidityEnvironment environment)
         {
             IFileProvider provider = new PhysicalFileProvider(solidityInfrastructure.Location);
 
-            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetRoyaltiesFileName()));
+            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetRoyaltiesFileName(environment)));
 
             var content = File.ReadAllText(fileInfo.PhysicalPath);
 
             return JsonConvert.DeserializeObject<Royalties>(content);
         }
 
-        private string GetEthAccountFileName()
+        private string GetEthAccountFileName(SolidityEnvironment environment)
         {
             // TODO
-            return string.Format("ethaccount-{0}.json", "test");
+            return string.Format("ethaccount-{0}.json", environment);
         }
 
-        private string GetRoyaltiesFileName()
+        private string GetRoyaltiesFileName(SolidityEnvironment environment)
         {
             // TODO
-            return string.Format("royalties-{0}.json", "test");
+            return string.Format("royalties-{0}.json", environment);
         }
     }
 }
