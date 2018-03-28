@@ -9,7 +9,7 @@ namespace Zimrii.Solidity.Admin.Models
     {
         public string Url { get; set; }
         public string AccountAddress { get; set; }
-        public string Password { get; set; }
+        public string Pwd { get; set; }
         public SolidityEnvironment SolidityEnvironment { get; set; }
 
         public IEnumerable<SelectListItem> SolidityEnvironments => new List<SelectListItem>
@@ -18,12 +18,12 @@ namespace Zimrii.Solidity.Admin.Models
             new SelectListItem{ Value = "Production", Text = "Production" }
         };
 
-        public RoyaltiesModel()
-        {
-            DeployResult = new Result();
-            SetRoyaltiesResult = new Result();
-            GetRoyaltiesResult = new Result();
-        }
+        //public RoyaltiesModel()
+        //{
+        //    DeployResult = new Result();
+        //    SetRoyaltiesResult = new Result();
+        //    GetRoyaltiesResult = new Result();
+        //}
 
         public string RoyaltiesAbi { get; set; }
         public string RoyaltiesBin { get; set; }

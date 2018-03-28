@@ -17,7 +17,7 @@ contract ZimcoToken is Owned, TokenBase {
       string tokenName,
       uint8 decimalUnits,
       string tokenSymbol
-    ) TokenBase (tokenData, tokenName, decimalUnits, tokenSymbol) {
+    ) public TokenBase (tokenData, tokenName, decimalUnits, tokenSymbol) {
 
     }
 
@@ -36,49 +36,54 @@ contract ZimcoToken is Owned, TokenBase {
       require(!toFrozen);                               // Check if recipient is frozen
       database.setBalanceOf(_from, fromValue - _value); // Subtract from the sender
       database.setBalanceOf(_to, toValue + _value);     // Add the same to the recipient
-      Transfer(_from, _to, _value);
+      emit Transfer(_from, _to, _value);
   }
 
   /// @notice Create `mintedAmount` tokens and send it to `target`
   /// @param _target Address to receive the tokens
   /// @param _mintedAmount the amount of tokens it will receive
-  function mintToken(address _target, uint256 _mintedAmount) onlyOwner {
+  function mintToken(address _target, uint256 _mintedAmount) public onlyOwner {
       TokenData database = TokenData(_tokenData);
       uint256 targetValue = database.getBalanceOf(_target);
       database.setBalanceOf(_target, targetValue + _mintedAmount);
       totalSupply += _mintedAmount;
-      Transfer(0, this, _mintedAmount);
-      Transfer(this, _target, _mintedAmount);
+      emit Transfer(0, this, _mintedAmount);
+      emit Transfer(this, _target, _mintedAmount);
   }
 
   /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
   /// @param _target Address to be frozen
   /// @param _freeze either to freeze it or not
-  function freezeAccount(address _target, bool _freeze) onlyOwner {
+  function freezeAccount(address _target, bool _freeze) public onlyOwner {
       TokenData database = TokenData(_tokenData);
       database.setFrozenAccount(_target, _freeze);
-      FrozenFunds(_target, _freeze);
+      emit FrozenFunds(_target, _freeze);
   }
 
   /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth
   /// @param _newSellPrice Price the users can sell to the contract
   /// @param _newBuyPrice Price users can buy from the contract
-  function setPrices(uint256 _newSellPrice, uint256 _newBuyPrice) onlyOwner {
+  function setPrices(uint256 _newSellPrice, uint256 _newBuyPrice) public onlyOwner {
       sellPrice = _newSellPrice;
       buyPrice = _newBuyPrice;
   }
 
   /// @notice Buy tokens from contract by sending ether
-  function buy() payable {
+  function buy() public payable {
       uint amount = msg.value / buyPrice;               // calculates the amount
       _transfer(this, msg.sender, amount);              // makes the transfers
   }
 
   /// @notice Sell `amount` tokens to contract
   /// @param _amount amount of tokens to be sold
-  function sell(uint256 _amount) {
-      require(this.balance >= _amount * sellPrice);      // checks if the contract has enough ether to buy
+  function sell(uint256 _amount) public {
+      require(address(this).balance >= _amount * sellPrice);      // checks if the contract has enough ether to buy
       _transfer(msg.sender, this, _amount);              // makes the transfers
       msg.sender.transfer(_amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
   }
+
+  function multiply(uint a) public pure returns(uint d) {
+             return a * 5;
+        }
+
 }

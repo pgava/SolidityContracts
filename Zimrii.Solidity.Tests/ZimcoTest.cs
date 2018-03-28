@@ -97,12 +97,18 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task ZimcoSetupZimcoTest()
         {
-            AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
-            PassPhrase = "";
+            await Setup(true);
+
+            //AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
+            //PassPhrase = "";
+
             ReadContractsDetails();
 
-            var contractDataAddress = "0x5125cf4b0588fe2b242183054f92f398bce6b2b6";
-            var contractZimcoAddress = "0xcfa0a5d69651de58f7d9530a3b982103e2ea911f";
+            //var contractDataAddress = "0x5125cf4b0588fe2b242183054f92f398bce6b2b6";
+            //var contractZimcoAddress = "0xcfa0a5d69651de58f7d9530a3b982103e2ea911f";
+
+            var contractDataAddress = Receipts["TokenData"].ContractAddress;
+            var contractZimcoAddress = Receipts["ZimcoToken"].ContractAddress;
 
             var contractData = Web3.Eth.GetContract(Abi["TokenData"], contractDataAddress);
             var contractZimco = Web3.Eth.GetContract(Abi["ZimcoToken"], contractZimcoAddress);
@@ -116,16 +122,16 @@ namespace Zimrii.Solidity.Tests
             unlockResult.Should().BeTrue();
 
             // give Zimco access to database
-            var transactionHash1 = await changeOwners.SendTransactionAsync(AccountAddress, contractZimcoAddress, true);
-            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash1, false);
+            var transactionHash1 = await changeOwners.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, contractZimcoAddress, true);
+            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash1, true);
 
             unlockResult =
                 await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
             // set initial supply
-            var transactionHash2 = await setTotalSupply.SendTransactionAsync(AccountAddress, 1000000000);
-            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash2, false);
+            var transactionHash2 = await setTotalSupply.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, 1000000000);
+            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash2, true);
 
             // check the balance after transfer
             var res = await balanceOf.CallAsync<int>(AccountAddress);

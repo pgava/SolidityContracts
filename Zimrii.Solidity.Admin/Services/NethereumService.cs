@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.FileProviders;
+using Nethereum.Geth;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
@@ -16,7 +17,7 @@ namespace Zimrii.Solidity.Admin.Services
         {
             var web3 = new Web3(url);
 
-            var deploy = await web3.Eth.DeployContract.SendRequestAsync(abi, code, accountAddress, new HexBigInteger(21000), new HexBigInteger(40), new HexBigInteger(0));
+            var deploy = await web3.Eth.DeployContract.SendRequestAsync(abi, code, accountAddress, new HexBigInteger(300000));
             var receipt = await MineAndGetReceiptAsync(web3, deploy, accountAddress, passPhrase, isMine);
 
             return receipt;
@@ -47,7 +48,7 @@ namespace Zimrii.Solidity.Admin.Services
                 throw new Exception("Couldn't unlock account");
             }
 
-            var transactionHash = await setRoyalties.SendTransactionAsync(accountAddress, new HexBigInteger(21000), new HexBigInteger(40), new HexBigInteger(0), royaltiesGuid, royaltiesHash);
+            var transactionHash = await setRoyalties.SendTransactionAsync(accountAddress, new HexBigInteger(210000), null, null, royaltiesGuid, royaltiesHash);
 
             var receipt = await MineAndGetReceiptAsync(web3, transactionHash, accountAddress, passPhrase, isMine);
 
@@ -58,17 +59,18 @@ namespace Zimrii.Solidity.Admin.Services
         {
             var web3 = new Web3(url);
 
-            return await web3.Personal.UnlockAccount.SendRequestAsync(accountAddress, passPhrase, new HexBigInteger(120));
+            return await web3.Personal.UnlockAccount.SendRequestAsync(accountAddress, passPhrase, 120);
         }
 
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash, string accountAddress, string passPhrase, bool isMining)
         {
             bool miningResult = true;
 
+            var web3Geth = new Web3Geth();
+
             if (isMining)
             {
-                // TODO : where is miner now?
-                //miningResult = await web3.Miner.Start.SendRequestAsync(20);
+                miningResult = await web3Geth.Miner.Start.SendRequestAsync(20);
             }
 
             var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
@@ -78,8 +80,7 @@ namespace Zimrii.Solidity.Admin.Services
                 Thread.Sleep(1000);
                 receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
 
-                var unlockResult =
-                    await web3.Personal.UnlockAccount.SendRequestAsync(accountAddress, passPhrase, 120);
+                var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(accountAddress, passPhrase, 120);
 
                 if (!unlockResult)
                 {
@@ -89,8 +90,7 @@ namespace Zimrii.Solidity.Admin.Services
 
             if (isMining)
             {
-                // TODO
-                //miningResult = await web3.Miner.Stop.SendRequestAsync();
+                miningResult = await web3Geth.Miner.Stop.SendRequestAsync();
             }
 
             return receipt;

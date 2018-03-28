@@ -130,7 +130,7 @@ namespace Zimrii.SolidityCore2.Tests
                 {
                     default:
                         deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, 
-                            new HexBigInteger(2000000), new HexBigInteger(2000000));
+                            new HexBigInteger(300000));
                         break;
                 }
 

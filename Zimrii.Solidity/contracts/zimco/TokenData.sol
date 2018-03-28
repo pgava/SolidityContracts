@@ -5,7 +5,7 @@ import "./Owned.sol";
 /// @title Implements the token database
 contract TokenData is Owned { 
     
-    function TokenData() {
+    function TokenData() public {
         owners[msg.sender] = true;
     }
 

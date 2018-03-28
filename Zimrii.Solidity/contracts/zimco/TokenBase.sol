@@ -29,7 +29,7 @@ contract TokenBase is Owned {
         string tokenName,
         uint8 decimalUnits,
         string tokenSymbol
-        ) {
+        ) public {
         _tokenData = tokenData;
         name = tokenName;         // Set the name for display purposes
         symbol = tokenSymbol;     // Set the symbol for display purposes
@@ -79,7 +79,7 @@ contract TokenBase is Owned {
     function approve(address _spender, uint256 _value) public returns (bool) {
         TokenData database = TokenData(_tokenData);
         database.setAllowance(msg.sender, _spender, _value);
-        Approval(msg.sender, _spender, _value);
+        emit Approval(msg.sender, _spender, _value);
         return true;
     }
 
@@ -105,7 +105,7 @@ contract TokenBase is Owned {
         require (toValue + _value > toValue);             // Check for overflows
         database.setBalanceOf(_from, fromValue - _value); // Subtract from the sender
         database.setBalanceOf(_to, toValue + _value);     // Add the same to the recipient
-        Transfer(_from, _to, _value);
+        emit Transfer(_from, _to, _value);
     }
 
     /// @notice Allows `_spender` to spend no more than `_value` tokens in your behalf, and then ping the contract about it
@@ -129,7 +129,7 @@ contract TokenBase is Owned {
         require (senderValue > _value);                             // Check if the sender has enough
         database.setBalanceOf(msg.sender, senderValue - _value);    // Subtract from the sender
         totalSupply -= _value;                                      // Updates totalSupply
-        Burn(msg.sender, _value);
+        emit Burn(msg.sender, _value);
         return true;
     }
 
@@ -146,7 +146,7 @@ contract TokenBase is Owned {
         database.setBalanceOf(_from, fromBalance - _value);                 // Subtract from the targeted balance
         database.setAllowance(_from, msg.sender, fromAllowance - _value);    // Subtract from the sender's allowance
         totalSupply -= _value;                                              // Update totalSupply
-        Burn(_from, _value);
+        emit Burn(_from, _value);
         return true;
     }
 

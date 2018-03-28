@@ -10,8 +10,62 @@ namespace Zimrii.SolidityCore2.Tests
     public class MusicCopyrightTest : NethereumTestsBase
     {
 
-        public MusicCopyrightTest() : base(new[] { "AccessRestriction", "MusicCopyright" })
+        public MusicCopyrightTest() : base(new[] { "AccessRestriction", "ArtistRoyalties" })
         {
+        }
+
+        [TestMethod]
+        public async Task MusicCopyrightSolTestCore3()
+        {
+            await Setup(true);
+
+            var contractAddress = Receipts["MusicCopyright"].ContractAddress;
+            var contract = Web3.Eth.GetContract(Abi["MusicCopyright"], contractAddress);
+            var multiply = contract.GetFunction("multiply");
+            var setCopyright = contract.GetFunction("setCopyright");
+            var getCopyrightId = contract.GetFunction("getCopyrightId");
+
+            var res1 = await multiply.CallAsync<int>(7);
+
+            var unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
+            var transactionHash = await setCopyright.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null,
+                "61BF375C77BC4C089DCAD2AC4935E600", "6345D89C498A4EB79DB670F46F25EF00", "6B2M2Y8AsgTpgAmY7PhCfg==");
+
+            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
+
+            var res3 = await getCopyrightId.CallAsync<string>("61BF375C77BC4C089DCAD2AC4935E600");
+            res3.Should().Be("6345D89C498A4EB79DB670F46F25EF00");
+
+        }
+
+        [TestMethod]
+        public async Task MusicCopyrightSolTestCore4()
+        {
+            await Setup(true);
+
+            var contractAddress = Receipts["ArtistRoyalties"].ContractAddress;
+            var contract = Web3.Eth.GetContract(Abi["ArtistRoyalties"], contractAddress);
+            var multiply = contract.GetFunction("multiply");
+            var setRoyalties = contract.GetFunction("setRoyalties");
+            var getRoyaltiesHash = contract.GetFunction("getRoyaltiesHash");
+
+            var res1 = await multiply.CallAsync<int>(7);
+
+            var unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
+            var transactionHash = await setRoyalties.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null,
+                "61BF375C77BC4C089DCAD2AC4935E600", "6B2M2Y8AsgTpgAmY7PhCfg==");
+
+            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
+
+            var res3 = await getRoyaltiesHash.CallAsync<string>("61BF375C77BC4C089DCAD2AC4935E600");
+            res3.Should().Be("6B2M2Y8AsgTpgAmY7PhCfg==");
+
         }
 
         [TestMethod]
@@ -19,14 +73,14 @@ namespace Zimrii.SolidityCore2.Tests
         {
             await Setup(true);
 
-            //var contractAddress = Receipts["MusicCopyright"].ContractAddress;
-            var contractAddress = "0x936069329eca4e962447a4816197e50017a4753c";
+            var contractAddress = Receipts["MusicCopyright"].ContractAddress;
+            //var contractAddress = "0x936069329eca4e962447a4816197e50017a4753c";
 
             var contract = Web3.Eth.GetContract(Abi["MusicCopyright"], contractAddress);
 
             var addCopyrightEvent = contract.GetEvent("SetCopyright");
             var filterAll = await addCopyrightEvent.CreateFilterAsync();
-            var filterMusicId = await addCopyrightEvent.CreateFilterAsync("51BF375C77BC4C089DCAD2AC4935E600");
+            var filterMusicId = await addCopyrightEvent.CreateFilterAsync("61BF375C77BC4C089DCAD2AC4935E600");
 
             #region Filter Error
             // error when filter strings

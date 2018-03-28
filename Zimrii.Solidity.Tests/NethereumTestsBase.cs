@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Nethereum.Geth;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
@@ -45,11 +46,10 @@ namespace Zimrii.Solidity.Tests
         protected virtual async Task<TransactionReceipt> MineAndGetReceiptAsync(Web3 web3, string transactionHash, bool isMining)
         {
             bool miningResult = true;
-
+            var web3Geth = new Web3Geth();
             if (isMining)
             {
-                // TODO : where is miner now?
-                //miningResult = await web3.Miner.Start.SendRequestAsync(20);
+                miningResult = await web3Geth.Miner.Start.SendRequestAsync(20);
 
                 // geth 1.6+ this is not working
                 //miningResult.Should().BeTrue();
@@ -69,10 +69,9 @@ namespace Zimrii.Solidity.Tests
 
             if (isMining)
             {
-                // TODO
-                //miningResult = await web3.Miner.Stop.SendRequestAsync();
+                miningResult = await web3Geth.Miner.Stop.SendRequestAsync(20);
 
-                miningResult.Should().BeTrue();
+                //miningResult.Should().BeTrue();
             }
 
             return receipt;

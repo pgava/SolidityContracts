@@ -1,5 +1,5 @@
 {
-  "Url":"123",
-  "AccountAddress":"444"
+  "Url":"http://localhost:8545",
+  "AccountAddress":"0x12890d2cce102216644c59dae5baed380d84830c",
   "IsMine":true
 }

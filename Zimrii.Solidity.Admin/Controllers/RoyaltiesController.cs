@@ -31,7 +31,10 @@ namespace Zimrii.Solidity.Admin.Controllers
                 AccessControlBin = royalties.AccessControlBin,
                 RoyaltiesAbi = royalties.RoyaltiesAbi,
                 RoyaltiesBin = royalties.RoyaltiesBin,
-                ContractAddress = royalties.RoyaltiesContractAddress
+                ContractAddress = royalties.RoyaltiesContractAddress,
+                DeployResult = new Result(),
+                SetRoyaltiesResult = new Result(),
+                GetRoyaltiesResult = new Result()
             });
         }
 
@@ -41,8 +44,9 @@ namespace Zimrii.Solidity.Admin.Controllers
             var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
             var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
+            eth.IsMine = true;
 
-            var receiptAccessControl = await nethereumService.DeployContractAsync(eth.Url, model.AccessControlAbi, model.AccessControlBin, eth.AccountAddress, model.Password, eth.IsMine);
+            var receiptAccessControl = await nethereumService.DeployContractAsync(eth.Url, model.AccessControlAbi, model.AccessControlBin, eth.AccountAddress, model.Pwd, eth.IsMine);
 
             var receiptDataAccessControl = new
             {
@@ -59,7 +63,7 @@ namespace Zimrii.Solidity.Admin.Controllers
             royalties.AccessControlAbi = model.AccessControlAbi;
             royalties.AccessControlBin = model.AccessControlBin;
 
-            var receiptRoyalties = await nethereumService.DeployContractAsync(eth.Url, model.RoyaltiesAbi, model.RoyaltiesBin, eth.AccountAddress, model.Password, eth.IsMine);
+            var receiptRoyalties = await nethereumService.DeployContractAsync(eth.Url, model.RoyaltiesAbi, model.RoyaltiesBin, eth.AccountAddress, model.Pwd, eth.IsMine);
 
             var receiptDataRoyalties = new
             {
@@ -76,7 +80,8 @@ namespace Zimrii.Solidity.Admin.Controllers
             royalties.RoyaltiesAbi = model.RoyaltiesAbi;
             royalties.RoyaltiesBin = model.RoyaltiesBin;
 
-            royalties.RoyaltiesContractAddress = receiptAccessControl.ContractAddress;
+            royalties.RoyaltiesContractAddress = receiptRoyalties.ContractAddress;
+            royalties.AccessControlContractAddress = receiptAccessControl.ContractAddress;
 
             solidityService.SetRoyalties(solidityInfrastructure, eth.SolidityEnvironment, royalties);
 
@@ -92,7 +97,9 @@ namespace Zimrii.Solidity.Admin.Controllers
                     Message = "All good",
                     ResultType = "info",
                     ShowResult = true
-                }
+                },
+                SetRoyaltiesResult = new Result(),
+                GetRoyaltiesResult = new Result()
             });
         }
 
@@ -104,7 +111,7 @@ namespace Zimrii.Solidity.Admin.Controllers
             var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
 
             var receiptSetRoyalties = await nethereumService.SetRoyaltiesAsync(eth.Url, royalties.RoyaltiesAbi, eth.AccountAddress, royalties.RoyaltiesContractAddress, 
-                model.RoyaltiesGuid, model.RoyaltiesHash, model.Password, eth.IsMine);
+                model.RoyaltiesGuid, model.RoyaltiesHash, model.Pwd, eth.IsMine);
 
             var receiptDataSetRoyalties = new
             {
@@ -124,7 +131,10 @@ namespace Zimrii.Solidity.Admin.Controllers
                 AccessControlBin = royalties.AccessControlBin,
                 RoyaltiesAbi = royalties.RoyaltiesAbi,
                 RoyaltiesBin = royalties.RoyaltiesBin,
-                ContractAddress = royalties.RoyaltiesContractAddress
+                ContractAddress = royalties.RoyaltiesContractAddress,
+                DeployResult = new Result(),
+                SetRoyaltiesResult = new Result(),
+                GetRoyaltiesResult = new Result()
             });
         }
 
@@ -135,7 +145,7 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
 
-            var hash = await nethereumService.GetRoyaltiesAsync(eth.Url, royalties.RoyaltiesAbi, eth.AccountAddress, royalties.RoyaltiesContractAddress, model.RoyaltiesGuid, model.Password);
+            var hash = await nethereumService.GetRoyaltiesAsync(eth.Url, royalties.RoyaltiesAbi, eth.AccountAddress, royalties.RoyaltiesContractAddress, model.RoyaltiesGuid, model.Pwd);
 
             logger.LogInformation("{@hash}", new
             {
@@ -155,7 +165,9 @@ namespace Zimrii.Solidity.Admin.Controllers
                     Message = $"Hash: {hash}",
                     ResultType = "info",
                     ShowResult = true
-                }
+                },
+                DeployResult = new Result(),
+                SetRoyaltiesResult = new Result()
             });
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ namespace Zimrii.Solidity.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(string solidityEnvironment, string pwd)
+        public async Task<IActionResult> Index(string solidityEnvironment, string pwd)
         {
             EthAccount eth = null;
             SolidityEnvironment solEnv = SolidityEnvironment.Test;
@@ -53,8 +54,8 @@ namespace Zimrii.Solidity.Admin.Controllers
                 SolidityEnvironment = solEnv
             });
 
-            //var isUnlocked = nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);
-            var isUnlocked = true;
+            var isUnlocked = await nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);
+            //var isUnlocked = true;
 
             logger.LogInformation("{@zimco}", new
             {
@@ -63,7 +64,7 @@ namespace Zimrii.Solidity.Admin.Controllers
                 UnLock = isUnlocked
             });
 
-            var res = true;
+            var res = isUnlocked;
             return View(new EthereumAccountModel
             {
                 AccountAddress = eth.AccountAddress,
