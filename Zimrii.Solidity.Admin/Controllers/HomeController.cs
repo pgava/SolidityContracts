@@ -25,6 +25,15 @@ namespace Zimrii.Solidity.Admin.Controllers
         {
             var eth = solidityService.GetEthAccount(solidityInfrastructure, SolidityEnvironment.Test);
 
+            HttpContext.Session.SetObjectAsJson("EthereumAccountModel", new EthereumAccountModel
+            {
+                AccountAddress = eth.AccountAddress,
+                Url = eth.Url,
+                SolidityEnvironment = SolidityEnvironment.Test,
+                IsMine = eth.IsMine
+            });
+
+
             return View(new EthereumAccountModel
             {
                 Url = eth.Url,
@@ -46,12 +55,12 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             eth = solidityService.GetEthAccount(solidityInfrastructure, solEnv);
 
-            // TODO use another class 
             HttpContext.Session.SetObjectAsJson("EthereumAccountModel", new EthereumAccountModel
             {
                 AccountAddress = eth.AccountAddress,
                 Url = eth.Url,
-                SolidityEnvironment = solEnv
+                SolidityEnvironment = solEnv,
+                IsMine = eth.IsMine
             });
 
             var isUnlocked = await nethereumService.UnlockAccountAsync(eth.Url, eth.AccountAddress, pwd);

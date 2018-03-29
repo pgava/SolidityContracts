@@ -44,7 +44,6 @@ namespace Zimrii.Solidity.Admin.Controllers
             var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
             var royalties = solidityService.GetRoyalties(solidityInfrastructure, eth.SolidityEnvironment);
-            eth.IsMine = true;
 
             var receiptAccessControl = await nethereumService.DeployContractAsync(eth.Url, model.AccessControlAbi, model.AccessControlBin, eth.AccountAddress, model.Pwd, eth.IsMine);
 
@@ -133,7 +132,12 @@ namespace Zimrii.Solidity.Admin.Controllers
                 RoyaltiesBin = royalties.RoyaltiesBin,
                 ContractAddress = royalties.RoyaltiesContractAddress,
                 DeployResult = new Result(),
-                SetRoyaltiesResult = new Result(),
+                SetRoyaltiesResult = new Result
+                {
+                    Message = "All good",
+                    ResultType = "info",
+                    ShowResult = true
+                },
                 GetRoyaltiesResult = new Result()
             });
         }
@@ -155,6 +159,7 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             return View("Index", new RoyaltiesModel
             {
+                RoyaltiesHashRead = hash,
                 AccessControlAbi = royalties.AccessControlAbi,
                 AccessControlBin = royalties.AccessControlBin,
                 RoyaltiesAbi = royalties.RoyaltiesAbi,
