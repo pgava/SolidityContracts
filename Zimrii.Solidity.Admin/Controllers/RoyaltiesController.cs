@@ -52,10 +52,10 @@ namespace Zimrii.Solidity.Admin.Controllers
                 TransactionHash = receiptAccessControl.TransactionHash,
                 ContractAddress = receiptAccessControl.ContractAddress,
                 BlockHash = receiptAccessControl.BlockHash,
-                BlockNumber = receiptAccessControl.BlockNumber.Value,
-                CumulativeGasUsed = receiptAccessControl.CumulativeGasUsed.Value,
-                GasUsed = receiptAccessControl.GasUsed.Value,
-                TransactionIndex = receiptAccessControl.TransactionIndex.Value
+                BlockNumber = receiptAccessControl.BlockNumber.Value.ToString(),
+                CumulativeGasUsed = receiptAccessControl.CumulativeGasUsed.Value.ToString(),
+                GasUsed = receiptAccessControl.GasUsed.Value.ToString(),
+                TransactionIndex = receiptAccessControl.TransactionIndex.Value.ToString()
             };
             logger.LogInformation("{@receiptDataAccessControl}", receiptDataAccessControl);
 
@@ -69,10 +69,10 @@ namespace Zimrii.Solidity.Admin.Controllers
                 TransactionHash = receiptRoyalties.TransactionHash,
                 ContractAddress = receiptRoyalties.ContractAddress,
                 BlockHash = receiptRoyalties.BlockHash,
-                BlockNumber = receiptRoyalties.BlockNumber.Value,
-                CumulativeGasUsed = receiptRoyalties.CumulativeGasUsed.Value,
-                GasUsed = receiptRoyalties.GasUsed.Value,
-                TransactionIndex = receiptRoyalties.TransactionIndex.Value
+                BlockNumber = receiptRoyalties.BlockNumber.Value.ToString(),
+                CumulativeGasUsed = receiptRoyalties.CumulativeGasUsed.Value.ToString(),
+                GasUsed = receiptRoyalties.GasUsed.Value.ToString(),
+                TransactionIndex = receiptRoyalties.TransactionIndex.Value.ToString()
             };
             logger.LogInformation("{@receiptDataRoyalties}", receiptDataRoyalties);
 
@@ -117,10 +117,10 @@ namespace Zimrii.Solidity.Admin.Controllers
                 TransactionHash = receiptSetRoyalties.TransactionHash,
                 ContractAddress = receiptSetRoyalties.ContractAddress,
                 BlockHash = receiptSetRoyalties.BlockHash,
-                BlockNumber = receiptSetRoyalties.BlockNumber.Value,
-                CumulativeGasUsed = receiptSetRoyalties.CumulativeGasUsed.Value,
-                GasUsed = receiptSetRoyalties.GasUsed.Value,
-                TransactionIndex = receiptSetRoyalties.TransactionIndex.Value
+                BlockNumber = receiptSetRoyalties.BlockNumber.Value.ToString(),
+                CumulativeGasUsed = receiptSetRoyalties.CumulativeGasUsed.Value.ToString(),
+                GasUsed = receiptSetRoyalties.GasUsed.Value.ToString(),
+                TransactionIndex = receiptSetRoyalties.TransactionIndex.Value.ToString()
             };
             logger.LogInformation("{@receiptDataSetRoyalties}", receiptDataSetRoyalties);
 

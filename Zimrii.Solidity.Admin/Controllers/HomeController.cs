@@ -50,7 +50,11 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             if (solidityEnvironment == SolidityEnvironment.Production.ToString())
             {
-                eth = solidityService.GetEthAccount(solidityInfrastructure, SolidityEnvironment.Production);
+                solEnv = SolidityEnvironment.Production;
+            }
+            if (solidityEnvironment == SolidityEnvironment.Uat.ToString())
+            {
+                solEnv = SolidityEnvironment.Uat;
             }
 
             eth = solidityService.GetEthAccount(solidityInfrastructure, solEnv);
