@@ -15,6 +15,25 @@ namespace Zimrii.SolidityCore2.Tests
         }
 
         [TestMethod]
+        public async Task BigIntegerTest()
+        {
+            var res = new HexBigInteger(200000);
+
+            var str = res.Value.ToString();
+        }
+
+        [TestMethod]
+        public async Task CreateAccountTest()
+        {
+            var unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
+            var newAccount = await Web3.Personal.NewAccount.SendRequestAsync("password");
+
+        }
+
+        [TestMethod]
         public async Task MusicCopyrightSolTestCore3()
         {
             await Setup(true);
