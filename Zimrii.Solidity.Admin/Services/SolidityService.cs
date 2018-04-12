@@ -43,16 +43,41 @@ namespace Zimrii.Solidity.Admin.Services
             return JsonConvert.DeserializeObject<Royalties>(content);
         }
 
+        public Copyrights GetCopyrights(ISolidityInfrastructure solidityInfrastructure, SolidityEnvironment environment)
+        {
+            IFileProvider provider = new PhysicalFileProvider(solidityInfrastructure.Location);
+
+            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetCopyrightsFileName(environment)));
+
+            var content = File.ReadAllText(fileInfo.PhysicalPath);
+
+            return JsonConvert.DeserializeObject<Copyrights>(content);
+        }
+
+        public void SetCopyrights(ISolidityInfrastructure solidityInfrastructure, SolidityEnvironment environment, Copyrights copyrights)
+        {
+            IFileProvider provider = new PhysicalFileProvider(solidityInfrastructure.Location);
+
+            IFileInfo fileInfo = provider.GetFileInfo(Path.Combine("metadata/", GetCopyrightsFileName(environment)));
+
+            var content = JsonConvert.SerializeObject(copyrights);
+
+            File.WriteAllText(fileInfo.PhysicalPath, content);
+        }
+
         private string GetEthAccountFileName(SolidityEnvironment environment)
         {
-            // TODO
             return string.Format("ethaccount-{0}.json", environment);
         }
 
         private string GetRoyaltiesFileName(SolidityEnvironment environment)
         {
-            // TODO
             return string.Format("royalties-{0}.json", environment);
+        }
+
+        private string GetCopyrightsFileName(SolidityEnvironment environment)
+        {
+            return string.Format("copyrights-{0}.json", environment);
         }
     }
 }

@@ -5,7 +5,7 @@ using Zimrii.Solidity.Admin.Services;
 
 namespace Zimrii.Solidity.Admin.Models
 {
-    public class RoyaltiesModel
+    public class CopyrightsModel
     {
         public string Url { get; set; }
         public string AccountAddress { get; set; }
@@ -19,28 +19,22 @@ namespace Zimrii.Solidity.Admin.Models
             new SelectListItem{ Value = "Production", Text = "Production" }
         };
 
-        public string RoyaltiesAbi { get; set; }
-        public string RoyaltiesBin { get; set; }
+        public string CopyrightsAbi { get; set; }
+        public string CopyrightsBin { get; set; }
 
         public string AccessControlAbi { get; set; }
         public string AccessControlBin { get; set; }
 
         public string ContractAddress { get; set; }
-        public string RoyaltiesGuid { get; set; }
-        public string RoyaltiesHash { get; set; }
+        public string CopyrightsGuid { get; set; }
+        public string CopyrightsHash { get; set; }
 
-        public string RoyaltiesHashRead { get; set; }
+        public string CopyrightsHashRead { get; set; }
 
         public Result DeployResult { get; set; }
-        public Result SetRoyaltiesResult { get; set; }
-        public Result GetRoyaltiesResult { get; set; }
+        public Result SetCopyrightsResult { get; set; }
+        public Result GetCopyrightsResult { get; set; }
 
     }
 
-    public class Result
-    {
-        public bool ShowResult { get; set; }
-        public string ResultType { get; set; }
-        public string Message { get; set; }
-    }
 }

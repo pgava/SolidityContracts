@@ -23,6 +23,18 @@ namespace Zimrii.Solidity.Admin.Services
             return receipt;
         }
 
+        public async Task<string> GetCopyrightsAsync(string url, string abi, string accountAddress, string contractAddress, string copyrightsGuid, string passPhrase)
+        {
+            var web3 = new Web3(url);
+
+            var contract = web3.Eth.GetContract(abi, contractAddress);
+            var getCopyrightsHash = contract.GetFunction("getCopyrightsHash");
+
+            var res = await getCopyrightsHash.CallAsync<string>(copyrightsGuid);
+
+            return res;
+        }
+
         public async Task<string> GetRoyaltiesAsync(string url, string abi, string accountAddress, string contractAddress, string royaltiesGuid, string passPhrase)
         {
             var web3 = new Web3(url);
@@ -33,6 +45,26 @@ namespace Zimrii.Solidity.Admin.Services
             var res = await getRoyaltiesHash.CallAsync<string>(royaltiesGuid);
 
             return res;
+        }
+
+        public async Task<TransactionReceipt> SetCopyrightsAsync(string url, string abi, string accountAddress, string contractAddress, string copyrightsGuid, string copyrightsHash, string passPhrase, bool isMine)
+        {
+            var web3 = new Web3(url);
+
+            var contract = web3.Eth.GetContract(abi, contractAddress);
+            var setCopyrights = contract.GetFunction("setCopyrights");
+
+            var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(accountAddress, passPhrase, 120);
+            if (!unlockResult)
+            {
+                throw new Exception("Couldn't unlock account");
+            }
+
+            var transactionHash = await setCopyrights.SendTransactionAsync(accountAddress, new HexBigInteger(210000), null, null, copyrightsGuid, copyrightsHash);
+
+            var receipt = await MineAndGetReceiptAsync(web3, transactionHash, accountAddress, passPhrase, isMine);
+
+            return receipt;
         }
 
         public async Task<TransactionReceipt> SetRoyaltiesAsync(string url, string abi, string accountAddress, string contractAddress, string royaltiesGuid, string royaltiesHash, string passPhrase, bool isMine)
