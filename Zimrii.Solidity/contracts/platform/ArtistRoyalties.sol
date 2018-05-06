@@ -1,4 +1,4 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.13;
 
 import "./AccessControl.sol";
 
@@ -6,9 +6,7 @@ import "./AccessControl.sol";
 /// The underline structure maps a royalties guid to a royalties hash.
 /// The guids are a reference to the Zimrii database.
 /// The hash must match the data stored in the zimrii database.
-/// From the royalties guid is possible to get the royalties hash and
-/// the resource endpoint url from where to get all the data stored
-/// in the Zinrii database.
+/// From the royalties guid is possible to get the royalties hash. 
 contract ArtistRoyalties is AccessControl {
 
     /* Event triggered when a royalties is set. */
@@ -32,7 +30,6 @@ contract ArtistRoyalties is AccessControl {
         
         royalties[_royaltiesId] = RoyaltiesData(true,  _royaltiesHash);   
 
-        // todo: do I need to return also  data: {'endpoint': 'xxxx'}
         emit SetRoyalties(_royaltiesId, _royaltiesHash);
 
         return _royaltiesId;
@@ -51,7 +48,4 @@ contract ArtistRoyalties is AccessControl {
         return res;
     }
     
-    function multiply(uint a) public pure returns(uint d) {
-             return a * 5;
-        }
 }

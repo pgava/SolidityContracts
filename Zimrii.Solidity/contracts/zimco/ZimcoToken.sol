@@ -82,8 +82,4 @@ contract ZimcoToken is Owned, TokenBase {
       msg.sender.transfer(_amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
   }
 
-  function multiply(uint a) public pure returns(uint d) {
-             return a * 5;
-        }
-
 }

@@ -1,13 +1,11 @@
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.13;
 
 import "./AccessControl.sol";
 
 /// @title Implements the storage of the music copyrights.
 /// The underline structure maps a music guid to a copyright guid.
 /// The guids are a reference to the Zimrii database.
-/// From a music guid is possible to get the copyright guid and
-/// the resource endpoint url from where to get all the data stored
-/// for the copyright in the Zinrii database.
+/// From a music guid is possible to get the copyright guid.
 contract MusicCopyright is AccessControl {
 
     /* Event triggered when a copyrights is set.
@@ -27,12 +25,6 @@ contract MusicCopyright is AccessControl {
         bytes32 copyrightHash;     
     }
     
-    /* Holds the root endpoint url.
-     * This is used to build the endpoint for a copyright.
-     * For example: https://zimrii.api.com/copyrights/<copyright guid>
-     */
-    string private copyrightEndpointResourceRoot = "";
-
     /* Holds all the mappings music -> copyrights. */
     mapping(bytes32 => Copyright) private copyrights;
     
@@ -43,7 +35,6 @@ contract MusicCopyright is AccessControl {
     function setCopyright(bytes32 _musicId, bytes32 _copyrightId, bytes32 _copyrightHash) public onlyOwner returns(bytes32 id) {
         copyrights[_musicId] = Copyright(true, _copyrightId, _copyrightHash);   
 
-        // todo: do I need to return also  data: {'endpoint': 'xxxx'}
         emit SetCopyright(_musicId, _copyrightId);
 
         return _musicId;
@@ -75,7 +66,4 @@ contract MusicCopyright is AccessControl {
         return res2;
     }
 
-    function multiply(uint a) public pure returns(uint d) {
-             return a * 5;
-        }
 }
