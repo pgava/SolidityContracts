@@ -1,12 +1,12 @@
 pragma solidity ^0.4.13;
 
-import "./AccessControl.sol";
+import "./Owned.sol";
 
 /// @title Implements the storage of the music copyrights.
 /// The underline structure maps a music guid to a copyright guid.
 /// The guids are a reference to the Zimrii database.
 /// From a music guid is possible to get the copyright guid.
-contract MusicCopyright is AccessControl {
+contract MusicCopyright is Owned {
 
     /* Event triggered when a copyrights is set.
      * Params:
@@ -44,7 +44,7 @@ contract MusicCopyright is AccessControl {
     /// @param _musicId The guid of the music.
     /// @return The guid of the copyright.
     function getCopyrightId(bytes32 _musicId) public view returns (bytes32 res) {
-         res = "";
+        res = "";
         
         if (copyrights[_musicId].exists) {
             res = copyrights[_musicId].copyrightId;
@@ -56,14 +56,14 @@ contract MusicCopyright is AccessControl {
     /// @notice Gets the copyright hash for a particular piece of music.
     /// @param _musicId The guid of the music.
     /// @return The hash of the copyright.
-    function getCopyrightHash(bytes32 _musicId) public view returns (bytes32 res2) {
-         res2 = "";
+    function getCopyrightHash(bytes32 _musicId) public view returns (bytes32 res) {
+        res = "";
         
         if (copyrights[_musicId].exists) {
-            res2 = copyrights[_musicId].copyrightHash;
+            res = copyrights[_musicId].copyrightHash;
         }
 
-        return res2;
+        return res;
     }
 
 }

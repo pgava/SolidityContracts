@@ -10,7 +10,7 @@ namespace Zimrii.Solidity.Tests
     public class ArtistContractTest : NethereumTestsBase
     {
 
-        public ArtistContractTest() : base(new[] { "AccessRestriction", "ArtistContract" })
+        public ArtistContractTest() : base(new[] { "Owned", "ArtistContract" })
         {
         }
 
@@ -46,11 +46,9 @@ namespace Zimrii.Solidity.Tests
 
             var setContract = contract.GetFunction("setContract");
             var getContractHash = contract.GetFunction("getContractHash");
-            var setContractEndpointResourceRoot = contract.GetFunction("setContractEndpointResourceRoot");
-            var getContractResourceEndpoint = contract.GetFunction("getContractResourceEndpoint");
 
             var unlockResult =
-                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
             var transactionHash = await setContract.SendTransactionAsync(AccountAddress, 
@@ -58,10 +56,6 @@ namespace Zimrii.Solidity.Tests
 
             var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
-            transactionHash = await setContractEndpointResourceRoot.SendTransactionAsync(AccountAddress,
-                new HexBigInteger(2000000), new HexBigInteger(120), @"http:\\myservice\");
-
-            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
 
             //var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
             //    new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
@@ -74,9 +68,6 @@ namespace Zimrii.Solidity.Tests
 
             var res3 = await getContractHash.CallAsync<string>("contractId");
             res3.Should().Be("contractHash");
-
-            var res4 = await getContractResourceEndpoint.CallAsync<string>("contractId");
-            res4.Should().Be(@"http:\\myservice\contractId");
         }
     }
 

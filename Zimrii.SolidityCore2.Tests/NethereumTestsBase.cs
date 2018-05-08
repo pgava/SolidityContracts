@@ -28,6 +28,7 @@ namespace Zimrii.SolidityCore2.Tests
         {
             Contracts = contracts;
             Web3 = new Web3();
+            //Web3 = new Web3("http://52.171.142.116:8545/");
         }
 
         protected async Task Setup(bool isMining)

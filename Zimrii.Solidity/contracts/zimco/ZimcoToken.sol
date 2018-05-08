@@ -1,7 +1,7 @@
 pragma solidity ^0.4.13;
 
-import "./TokenBase.sol";
 import "./Owned.sol";
+import "./TokenBase.sol";
 import "./TokenData.sol";
 
 contract ZimcoToken is Owned, TokenBase {

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.13;
 
+import "./Owned.sol";
 import "./TokenRecipient.sol";
 import "./TokenData.sol";
-import "./Owned.sol";
 
 contract TokenBase is Owned { 
     /* Public variables of the token */ 
