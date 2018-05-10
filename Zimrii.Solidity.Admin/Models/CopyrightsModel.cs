@@ -29,7 +29,7 @@ namespace Zimrii.Solidity.Admin.Models
         public string CopyrightsGuid { get; set; }
         public string CopyrightsHash { get; set; }
 
-        public string CopyrightsHashRead { get; set; }
+        public string CopyrightsHashResult { get; set; }
 
         public Result DeployResult { get; set; }
         public Result SetCopyrightsResult { get; set; }

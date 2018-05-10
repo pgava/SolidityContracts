@@ -103,7 +103,7 @@ namespace Zimrii.Solidity.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetCopyrights(CopyrightsModel model)
+        public async Task<IActionResult> SetCopyrights(CopyrightsModel model)
         {
             var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
@@ -143,7 +143,7 @@ namespace Zimrii.Solidity.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SetCopyrights(CopyrightsModel model)
+        public async Task<IActionResult> GetCopyrights(CopyrightsModel model)
         {
             var eth = HttpContext.Session.GetObjectFromJson<EthereumAccountModel>("EthereumAccountModel");
 
@@ -159,7 +159,7 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             return View("Index", new CopyrightsModel
             {
-                CopyrightsHashRead = hash,
+                CopyrightsHashResult = hash,
                 AccessControlAbi = copyrights.AccessControlAbi,
                 AccessControlBin = copyrights.AccessControlBin,
                 CopyrightsAbi = copyrights.CopyrightsAbi,

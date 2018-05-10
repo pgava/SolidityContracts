@@ -16,7 +16,7 @@ namespace Zimrii.Solidity.Tests
     public class ZimcoTest : NethereumTestsBase
     {
 
-        public ZimcoTest() : base(new[] { "owned", "TokenData", "ZimcoToken" }) 
+        public ZimcoTest() : base(new[] { "Owned", "TokenData", "ZimcoToken" }) 
         {
             RootPath = @"..\..\..\..\..\Zimrii.Solidity\contracts\zimco\metadata";
             string curDir = AssemblyDirectory;
@@ -29,8 +29,74 @@ namespace Zimrii.Solidity.Tests
 
         }
 
-        protected override async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining,
-            Action<Dictionary<string, TransactionReceipt>> saveContract = null)
+        [Fact]
+        public async Task ZimcoSetupZimcoTest()
+        {
+            await Setup(true);
+
+            var artistAddress = "0x0171a28b51c70037a37e940eb22101cd5f687d00";
+            var toAddress = "0x13f022d72158410433cbd66f5dd8bf6d2d129924";
+
+            ReadContractsDetails();
+
+            var contractDataAddress = Receipts["TokenData"].ContractAddress;
+            var contractZimcoAddress = Receipts["ZimcoToken"].ContractAddress;
+
+            var contractData = Web3.Eth.GetContract(Abi["TokenData"], contractDataAddress);
+            var contractZimco = Web3.Eth.GetContract(Abi["ZimcoToken"], contractZimcoAddress);
+
+            var changeOwners = contractData.GetFunction("changeOwners");
+            var setTotalSupply = contractZimco.GetFunction("setTotalSupply");
+            var transfer = contractZimco.GetFunction("transfer");
+            var transferFrom = contractZimco.GetFunction("transferFrom");
+            var setAllowance = contractData.GetFunction("setAllowance");
+            var getAllowance = contractData.GetFunction("getAllowance");
+            var balanceOf = contractZimco.GetFunction("balanceOf");
+            
+            var unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
+            // give Zimco access to database
+            var gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, contractZimcoAddress, true);
+            var receipt1 = await changeOwners.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, contractZimcoAddress, true);
+
+            unlockResult =
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
+            // set initial supply
+            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, 1000000000);
+            var receipt2 = await setTotalSupply.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, 1000000000);
+
+            // transfer all tokens
+            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, artistAddress, 800000000);
+            var receipt3 = await transfer.SendTransactionAsync(AccountAddress, gas, null, null, artistAddress, 800000000);
+
+            // check the balance
+            var res = await balanceOf.CallAsync<int>(artistAddress);
+            res.Should().Be(800000000);
+
+            // set allowance to zimrii
+            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, artistAddress, AccountAddress, 750000);
+            var receipt4 = await setAllowance.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, artistAddress, AccountAddress, 750000);
+
+            // check the balance
+            var res2 = await balanceOf.CallAsync<int>(artistAddress);
+            res2 = await balanceOf.CallAsync<int>(AccountAddress);
+            res2 = await getAllowance.CallAsync<int>(artistAddress, AccountAddress);
+
+            // transfer from
+            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, artistAddress, "0x13f022d72158410433cbd66f5dd8bf6d2d129924", 75000);
+            var receipt5 = await transferFrom.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, artistAddress, toAddress, 75000);
+
+            // check the balance after transfer
+            var res3 = await balanceOf.CallAsync<int>(artistAddress);
+            res3 = await balanceOf.CallAsync<int>(AccountAddress);
+            res3 = await balanceOf.CallAsync<int>("0x13f022d72158410433cbd66f5dd8bf6d2d129924");
+        }
+
+        protected override async Task<Dictionary<string, TransactionReceipt>> DeployContract(Web3 web3, IEnumerable<string> contracts, bool isMining, Action<Dictionary<string, TransactionReceipt>> saveContract = null)
         {
             var receipts = new Dictionary<string, TransactionReceipt>();
 
@@ -67,25 +133,6 @@ namespace Zimrii.Solidity.Tests
             return receipts;
         }
 
-        [Fact]
-        public async Task DeployZimcoToRinkeby()
-        {
-
-            AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
-            PassPhrase = "";
-
-            await Setup(false, SaveZimcoDetails);
-        }
-
-        [Fact]
-        public async Task DeployZimcoToTestChain()
-        {
-            //AccountAddress = "0x0171a28b51c70037a37e940eb22101cd5f687d00";
-            //PassPhrase = "password";
-
-            await Setup(true, SaveZimcoDetails);
-        }
-
         void SaveZimcoDetails(Dictionary<string, TransactionReceipt> receipts)
         {
             foreach (var receipt in receipts)
@@ -102,124 +149,6 @@ namespace Zimrii.Solidity.Tests
                     TransactionIndex = receipt.Value.TransactionIndex.Value.ToString()
                 });
             }
-        }
-
-        [Fact]
-        public async Task ZimcoSetupZimcoTest()
-        {
-            //await Setup(true);
-
-            var artistAddress = "0x0171a28b51c70037a37e940eb22101cd5f687d00";
-
-            //AccountAddress = "0x564f83ae16af0741ce756adf35dcf9b17874b83f";
-            //PassPhrase = "";
-
-            ReadContractsDetails();
-
-            var contractDataAddress = "0x83ad5878719bc71c9f3f3366c51d8169b7e8d532";
-            var contractZimcoAddress = "0xfd0dc2502f5ee582fed4731ed68600b76e6f33c2";
-
-            //var contractDataAddress = Receipts["TokenData"].ContractAddress;
-            //var contractZimcoAddress = Receipts["ZimcoToken"].ContractAddress;
-
-            var contractData = Web3.Eth.GetContract(Abi["TokenData"], contractDataAddress);
-            var contractZimco = Web3.Eth.GetContract(Abi["ZimcoToken"], contractZimcoAddress);
-
-            var changeOwners = contractData.GetFunction("changeOwners");
-            var setTotalSupply = contractZimco.GetFunction("setTotalSupply");
-            var transfer = contractZimco.GetFunction("transfer");
-            var transferFrom = contractZimco.GetFunction("transferFrom");
-            var setAllowance = contractData.GetFunction("setAllowance");
-            var getAllowance = contractData.GetFunction("getAllowance");
-            var balanceOf = contractZimco.GetFunction("balanceOf");
-            
-            var unlockResult =
-                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
-            unlockResult.Should().BeTrue();
-
-            // give Zimco access to database
-            var transactionHash1 = await changeOwners.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, contractZimcoAddress, true);
-            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash1, true);
-
-            unlockResult =
-                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
-            unlockResult.Should().BeTrue();
-
-            // set initial supply
-            var transactionHash2 = await setTotalSupply.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, 1000000000);
-            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash2, true);
-
-            // transfer all tokens
-            var transactionHash3 = await transfer.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, artistAddress, 800000000);
-            var receipt3 = await MineAndGetReceiptAsync(Web3, transactionHash3, true);
-
-            // check the balance
-            var res = await balanceOf.CallAsync<int>(artistAddress);
-            res.Should().Be(800000000);
-
-            // set allowance to zimrii
-            var transactionHash4 = await setAllowance.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, artistAddress, AccountAddress, 750000);
-            var receipt4 = await MineAndGetReceiptAsync(Web3, transactionHash4, true);
-
-            // check the balance
-            var res2 = await balanceOf.CallAsync<int>(artistAddress);
-            res2 = await balanceOf.CallAsync<int>(AccountAddress);
-            res2 = await getAllowance.CallAsync<int>(artistAddress, AccountAddress);
-
-            // transfer from
-            var transactionHash5 = await transferFrom.SendTransactionAsync(AccountAddress, new HexBigInteger(210000), null, null, artistAddress, "0x13f022d72158410433cbd66f5dd8bf6d2d129924", 75000);
-            var receipt5 = await MineAndGetReceiptAsync(Web3, transactionHash5, true);
-
-            // check the balance after transfer
-            var res3 = await balanceOf.CallAsync<int>(artistAddress);
-            res3 = await balanceOf.CallAsync<int>(AccountAddress);
-            res3 = await balanceOf.CallAsync<int>("0x13f022d72158410433cbd66f5dd8bf6d2d129924");
-        }
-
-
-        [Fact]
-        public async Task ZimcoOperationTest()
-        {
-
-            await Setup(true);
-
-            var contractDataAddress = Receipts["TokenData"].ContractAddress;
-            var contractZimcoAddress = Receipts["ZimcoToken"].ContractAddress;
-
-            var contractData = Web3.Eth.GetContract(Abi["TokenData"], contractDataAddress);
-            var contractZimco = Web3.Eth.GetContract(Abi["ZimcoToken"], contractZimcoAddress);
-
-            var transferEvent = contractZimco.GetEvent("Transfer");
-            var filterAll = await transferEvent.CreateFilterAsync();
-
-            var changeOwners = contractData.GetFunction("changeOwners");
-            var setTotalSupply = contractZimco.GetFunction("setTotalSupply");
-            var balanceOf = contractZimco.GetFunction("balanceOf");
-            var transfer = contractZimco.GetFunction("transfer");
-
-            var unlockResult =
-                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
-            unlockResult.Should().BeTrue();
-
-            // give Zimco access to database
-            var transactionHash1 = await changeOwners.SendTransactionAsync(AccountAddress, contractZimcoAddress, true);
-            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash1, true);
-
-            // set initial supply
-            var transactionHash2 = await setTotalSupply.SendTransactionAsync(AccountAddress, 5000000);
-            var receipt2 = await MineAndGetReceiptAsync(Web3, transactionHash2, true);
-
-            // transfer funds
-            var transactionHash3 = await transfer.SendTransactionAsync(AccountAddress, "0x13f022d72158410433cbd66f5dd8bf6d2d129924", 750000);
-            var receipt3 = await MineAndGetReceiptAsync(Web3, transactionHash3, true);
-
-            // read the log
-            var log = await transferEvent.GetFilterChanges<TransferEvent>(filterAll);
-            log.Count.Should().Be(1);
-
-            // check the balance after transfer
-            var res3 = await balanceOf.CallAsync<int>(AccountAddress);
-            res3.Should().Be(5000000 - 750000);
         }
 
     }

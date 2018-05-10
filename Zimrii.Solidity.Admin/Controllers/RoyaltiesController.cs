@@ -159,7 +159,8 @@ namespace Zimrii.Solidity.Admin.Controllers
 
             return View("Index", new RoyaltiesModel
             {
-                RoyaltiesHashRead = hash,
+                RoyaltiesHash = hash,
+                RoyaltiesHashResult = hash,
                 AccessControlAbi = royalties.AccessControlAbi,
                 AccessControlBin = royalties.AccessControlBin,
                 RoyaltiesAbi = royalties.RoyaltiesAbi,

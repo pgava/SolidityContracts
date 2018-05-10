@@ -15,59 +15,35 @@ namespace Zimrii.Solidity.Tests
         }
 
         [Fact]
-        public async Task ArtistContractSolTest()
+        public async Task ArtistContractSolidityMethodsTest()
         {
             await Setup(true);
 
             var contractAddress = Receipts["ArtistContract"].ContractAddress;
             var contract = Web3.Eth.GetContract(Abi["ArtistContract"], contractAddress);
+            var setContract = contract.GetFunction("setContract");
+            var getContractHash = contract.GetFunction("getContractHash");
 
             var addContractEvent = contract.GetEvent("SetContract");
             var filterAll = await addContractEvent.CreateFilterAsync();
             var filterContractId = await addContractEvent.CreateFilterAsync("contractId");
 
-            #region Filter Error
-            // error when filter strings
-            /*
-               Nethereum.JsonRpc.Client.RpcResponseException : invalid topic(s)
-               at Nethereum.JsonRpc.Client.RpcRequestResponseHandler`1.<SendRequestAsync>d__7.MoveNext()
-            --- End of stack trace from previous location where exception was thrown ---
-               at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-               at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
-               at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
-               at Contracts.Tests.SolidityTest.<MusicCopyrightTest>d__6.MoveNext()
-            --- End of stack trace from previous location where exception was thrown ---
-               at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
-               at NUnit.Framework.Internal.AsyncInvocationRegion.AsyncTaskInvocationRegion.WaitForPendingOperationsToComplete(Object invocationResult)
-               at NUnit.Framework.Internal.Commands.TestMethodCommand.RunAsyncTestMethod(TestExecutionContext context)
-            */
-
-            #endregion
-
-            var setContract = contract.GetFunction("setContract");
-            var getContractHash = contract.GetFunction("getContractHash");
 
             var unlockResult =
                 await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
-            var transactionHash = await setContract.SendTransactionAsync(AccountAddress, 
-                new HexBigInteger(2000000), new HexBigInteger(120), "contractId", "contractHash");
+            var gas = await setContract.EstimateGasAsync(AccountAddress, null, null, "61BF375C77BC4C089DCAD2AC4935E600", "6B2M2Y8AsgTpgAmY7PhCfg==");
+            var receipt1 = await setContract.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, "61BF375C77BC4C089DCAD2AC4935E600", "6B2M2Y8AsgTpgAmY7PhCfg==");
 
-            var receipt1 = await MineAndGetReceiptAsync(Web3, transactionHash, true);
-
-
-            //var debuginfo = await Web3.DebugGeth.TraceTransaction.SendRequestAsync(transactionHash,
-            //    new TraceTransactionOptions { DisableMemory = false, DisableStorage = false, DisableStack = false });
+            var res = await getContractHash.CallAsync<string>("61BF375C77BC4C089DCAD2AC4935E600");
+            res.Should().Be("6B2M2Y8AsgTpgAmY7PhCfg==");
 
             var log = await addContractEvent.GetFilterChanges<AddContractEvent>(filterAll);
             log.Count.Should().Be(1);
 
             var logMusicId = await addContractEvent.GetFilterChanges<AddContractEvent>(filterContractId);
             logMusicId.Count.Should().Be(1);
-
-            var res3 = await getContractHash.CallAsync<string>("contractId");
-            res3.Should().Be("contractHash");
         }
     }
 

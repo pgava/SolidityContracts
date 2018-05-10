@@ -29,7 +29,7 @@ namespace Zimrii.Solidity.Admin.Models
         public string RoyaltiesGuid { get; set; }
         public string RoyaltiesHash { get; set; }
 
-        public string RoyaltiesHashRead { get; set; }
+        public string RoyaltiesHashResult { get; set; }
 
         public Result DeployResult { get; set; }
         public Result SetRoyaltiesResult { get; set; }
