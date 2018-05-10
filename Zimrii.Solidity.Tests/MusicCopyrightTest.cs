@@ -15,7 +15,7 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task MusicCopyrightSolTest()
         {
-            await Setup(true);
+            await Setup(false);
 
             var contractAddress = Receipts["MusicCopyright"].ContractAddress;
             var contract = Web3.Eth.GetContract(Abi["MusicCopyright"], contractAddress);

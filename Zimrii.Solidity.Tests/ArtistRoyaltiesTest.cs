@@ -16,20 +16,20 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task ArtistRoyaltiesSolidityMethodsTest()
         {
-            await Setup(true);
+            await Setup(false);
 
             var contractAddress = Receipts["ArtistRoyalties"].ContractAddress;
             var contract = Web3.Eth.GetContract(Abi["ArtistRoyalties"], contractAddress);
 
             var addRoyaltiesEvent = contract.GetEvent("SetRoyalties");
             var filterAll = await addRoyaltiesEvent.CreateFilterAsync();
-            var filterRoyaltiesId = await addRoyaltiesEvent.CreateFilterAsync("royaltiesId");
+            var filterRoyaltiesId = await addRoyaltiesEvent.CreateFilterAsync("61BF375C77BC4C089DCAD2AC4935E600");
 
             var setRoyalties = contract.GetFunction("setRoyalties");
             var getRoyaltiesHash = contract.GetFunction("getRoyaltiesHash");
 
             var unlockResult =
-                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, new HexBigInteger(120));
+                await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
             var gas = await setRoyalties.EstimateGasAsync(AccountAddress, null, null, "61BF375C77BC4C089DCAD2AC4935E600", "6B2M2Y8AsgTpgAmY7PhCfg==");
@@ -41,8 +41,8 @@ namespace Zimrii.Solidity.Tests
             var logMusicId = await addRoyaltiesEvent.GetFilterChanges<AddRoyaltiesEvent>(filterRoyaltiesId);
             logMusicId.Count.Should().Be(1);
 
-            var res1 = await getRoyaltiesHash.CallAsync<string>("royaltiesId");
-            res1.Should().Be("royaltiesHash");
+            var res1 = await getRoyaltiesHash.CallAsync<string>("61BF375C77BC4C089DCAD2AC4935E600");
+            res1.Should().Be("6B2M2Y8AsgTpgAmY7PhCfg==");
         }
     }
 

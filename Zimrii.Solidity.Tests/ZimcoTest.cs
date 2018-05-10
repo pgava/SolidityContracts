@@ -32,7 +32,7 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task ZimcoSetupZimcoTest()
         {
-            await Setup(true);
+            await Setup(false);
 
             var artistAddress = "0x0171a28b51c70037a37e940eb22101cd5f687d00";
             var toAddress = "0x13f022d72158410433cbd66f5dd8bf6d2d129924";
@@ -66,19 +66,19 @@ namespace Zimrii.Solidity.Tests
             unlockResult.Should().BeTrue();
 
             // set initial supply
-            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, 1000000000);
+            gas = await setTotalSupply.EstimateGasAsync(AccountAddress, null, null, 1000000000);
             var receipt2 = await setTotalSupply.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, 1000000000);
 
             // transfer all tokens
-            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, artistAddress, 800000000);
-            var receipt3 = await transfer.SendTransactionAsync(AccountAddress, gas, null, null, artistAddress, 800000000);
+            //gas = await transfer.EstimateGasAsync(AccountAddress, null, null, artistAddress, 800000000);
+            var receipt3 = await transfer.SendTransactionAndWaitForReceiptAsync(AccountAddress, new HexBigInteger(200000), null, null, artistAddress, 800000000);
 
             // check the balance
             var res = await balanceOf.CallAsync<int>(artistAddress);
             res.Should().Be(800000000);
 
             // set allowance to zimrii
-            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, artistAddress, AccountAddress, 750000);
+            gas = await setAllowance.EstimateGasAsync(AccountAddress, null, null, artistAddress, AccountAddress, 750000);
             var receipt4 = await setAllowance.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, artistAddress, AccountAddress, 750000);
 
             // check the balance
@@ -86,8 +86,11 @@ namespace Zimrii.Solidity.Tests
             res2 = await balanceOf.CallAsync<int>(AccountAddress);
             res2 = await getAllowance.CallAsync<int>(artistAddress, AccountAddress);
 
+            unlockResult = await Web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
+            unlockResult.Should().BeTrue();
+
             // transfer from
-            gas = await changeOwners.EstimateGasAsync(AccountAddress, null, null, artistAddress, "0x13f022d72158410433cbd66f5dd8bf6d2d129924", 75000);
+            gas = await transferFrom.EstimateGasAsync(AccountAddress, null, null, artistAddress, artistAddress, 75000);
             var receipt5 = await transferFrom.SendTransactionAndWaitForReceiptAsync(AccountAddress, gas, null, null, artistAddress, toAddress, 75000);
 
             // check the balance after transfer
@@ -104,27 +107,22 @@ namespace Zimrii.Solidity.Tests
                 await web3.Personal.UnlockAccount.SendRequestAsync(AccountAddress, PassPhrase, 120);
             unlockResult.Should().BeTrue();
 
+            TransactionReceipt receipt;
             foreach (var contract in contracts)
             {
-                string deploy;
                 switch (contract)
                 {
                     case "TokenBase":
                     case "ZimcoToken":
                         var contractDataAddress = receipts["TokenData"].ContractAddress;
-                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, new HexBigInteger(2000000),
-                            contractDataAddress,
-                            "zimco",
-                            2,
-                            "ZMC");
+                        receipt = await web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(Abi[contract], Code[contract], 
+                            AccountAddress, new HexBigInteger(2000000), null, contractDataAddress, "zimco", 2, "ZMC");
                         break;
 
                     default:
-                        deploy = await web3.Eth.DeployContract.SendRequestAsync(Abi[contract], Code[contract], AccountAddress, new HexBigInteger(2000000));
+                        receipt = await web3.Eth.DeployContract.SendRequestAndWaitForReceiptAsync(Abi[contract], Code[contract], AccountAddress, new HexBigInteger(2000000), null);
                         break;
                 }
-
-                var receipt = await MineAndGetReceiptAsync(web3, deploy, isMining);
 
                 receipts.Add(contract, receipt);
             }

@@ -17,7 +17,7 @@ namespace Zimrii.Solidity.Tests
         [Fact]
         public async Task ArtistContractSolidityMethodsTest()
         {
-            await Setup(true);
+            await Setup(false);
 
             var contractAddress = Receipts["ArtistContract"].ContractAddress;
             var contract = Web3.Eth.GetContract(Abi["ArtistContract"], contractAddress);
@@ -26,7 +26,7 @@ namespace Zimrii.Solidity.Tests
 
             var addContractEvent = contract.GetEvent("SetContract");
             var filterAll = await addContractEvent.CreateFilterAsync();
-            var filterContractId = await addContractEvent.CreateFilterAsync("contractId");
+            var filterContractId = await addContractEvent.CreateFilterAsync("61BF375C77BC4C089DCAD2AC4935E600");
 
 
             var unlockResult =
